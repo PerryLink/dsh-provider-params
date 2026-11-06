@@ -22,7 +22,7 @@ if (typeof pkg.engines?.node !== 'string' || !pkg.engines.node.includes('24.9'))
 if (pkg.peerDependencies?.['@deepseek-ai/dsh-tools'] === undefined) failures.push('peerDependencies must declare @deepseek-ai/dsh-tools')
 if (pkg.peerDependenciesMeta?.['@deepseek-ai/dsh-tools']?.optional !== true) failures.push('@deepseek-ai/dsh-tools must be an optional peer')
 
-const requiredFiles = ['lib', 'cordis.patch.yml', 'README.md', 'README-zh.md', 'samples']
+const requiredFiles = ['lib', 'cordis.patch.yml', 'README.md', 'samples']
 for (const entry of requiredFiles) {
   if (!Array.isArray(pkg.files) || !pkg.files.includes(entry)) failures.push(`files[] must include ${entry}`)
 }
@@ -50,14 +50,14 @@ if (!existsSync(path.join(samples, 'input', 'broken-tool-output.json'))) failure
 const expectedDir = path.join(samples, 'expected')
 if (!existsSync(expectedDir) || readdirSync(expectedDir).length === 0) failures.push('quickstart expected/ is empty')
 
-const readmeZh = readFileSync(path.join(root, 'README-zh.md'), 'utf8')
-if (!readmeZh.includes(pkg.version)) failures.push('README-zh.md must state the package version')
-if (demo?.prompt && !readmeZh.includes(demo.prompt)) failures.push('README-zh.md must repeat dsh.demo.prompt verbatim')
-for (const heading of ['## 一句话', '## 适合 / 不适合', '## 输入', '## 输出', '## 示例', '## 权限', '## FAQ', '## 版本']) {
-  if (!readmeZh.includes(heading)) failures.push(`README-zh.md is missing the "${heading}" block`)
+const readme = readFileSync(path.join(root, 'README.md'), 'utf8')
+if (!readme.includes(pkg.version)) failures.push('README.md must state the package version')
+if (demo?.prompt && !readme.includes(demo.prompt)) failures.push('README.md must repeat dsh.demo.prompt verbatim')
+for (const heading of ['## 它是什么', '## 三步上手', '## 核心能力', '## 配置', '## FAQ', '## 安全边界', '## 已知限制', '## 兼容性']) {
+  if (!readme.includes(heading)) failures.push(`README.md is missing the "${heading}" block`)
 }
-for (const line of ['读：', '写：', '联网：', '外部系统：']) {
-  if (!readmeZh.includes(line)) failures.push(`README-zh.md permission block is missing ${line}`)
+for (const line of ['**读**：', '**写**：', '**联网**：', '**外部系统**：']) {
+  if (!readme.includes(line)) failures.push(`README.md permission block is missing ${line}`)
 }
 
 const trouble = readFileSync(path.join(root, 'TROUBLESHOOTING.md'), 'utf8')

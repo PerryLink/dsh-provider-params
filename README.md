@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-dark.svg">
-  <img src="docs/assets/dsh-provider-params-flow-light.svg" width="100%" alt="dsh-provider-params 数据流：params-request.json → params.map → mapped/dropped/added/adjusted/unknown；broken-tool-output.json → json.repair → actions/strategies；params.compare 13 行、params.vendors 11 厂商 × 13 字段，四个工具均为 R0 只读">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-hero-zh-dark.webp">
+  <img src="docs/assets/dsh-provider-params-hero-zh-light.webp" width="100%" alt="dsh-provider-params 横幅：左侧为插件名、两句价值句与兼容信息；右侧为五行判定台账（mapped / adjusted / dropped / added / unknown），数值取自真实 quickstart 结果 openai → anthropic">
 </picture>
 
 # dsh-provider-params
@@ -36,6 +36,11 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 - **适合**：在 OpenAI、Claude、Gemini、ERNIE、Qwen、DeepSeek、Mistral、Cohere、xAI、Groq、Azure OpenAI 之间迁移 `temperature`、`top_p`、`max_tokens`、`stop`、`system` 等请求字段；审计某个参数到底是被改名、丢弃、夹到范围内，还是目标必填但源请求没给；工具输出带尾逗号、未转义换行或被截断，需要先确定性修好再解析。
 - **不适合**：让模型“猜”缺失的业务字段，或调用厂商 API——本包不联网、不调用模型，也不会编造值；替代厂商 SDK、鉴权、流式调用或完整的请求构造——它只处理参数片段和文本。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params 结构图：左栏 params.map 的三道判定门（认得该键？目标厂商有等价？超出文档范围？），否/是经侧向出口进入 unknown / dropped / adjusted，存活字段进入 mapped，目标必填而输入缺失的进入 added 且不带值；右栏 json.repair 的有界回环：trim 与围栏提取、parse，失败时最多 max_steps 轮策略（escapeRepair / trailingComma / truncationClosure）后重试 parse，再由 fieldCompletion 写 null 占位并做 schema 子集校验，最终 ok 或失败关闭的 E_JSON_*">
+</picture>
 
 ## 三步上手
 

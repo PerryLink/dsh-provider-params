@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" viewBox="0 0 1100 660" role="img" aria-label="dsh-provider-params structure: params.map sorts every field through three gates into five verdict lists; json.repair runs a bounded normalize-parse-strategy loop and stops at ok or E_JSON_*">
+<title>dsh-provider-params structure: verdict gates + bounded repair loop</title>
+<desc>Panel A: params.map reads the 11-by-13 table; each input key passes a recognised? gate (else unknown), a target-support gate (else dropped) and a documented-range gate (else adjusted), survivors land in mapped, and target-required gaps become added with no value. Panel B: json.repair trims and extracts a fence, parses, retries a bounded strategy pass (escapeRepair, trailingComma, truncationClosure) at most max_steps times, completes required fields with null, validates against the supported schema subset, then returns ok or a fail-closed E_JSON_* error.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9f6fd"/><stop offset="1" stop-color="#e4eaf8"/></linearGradient>
+<pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#4b67b4" opacity="0.08"/></pattern>
+<filter id="soft" x="-20%" y="-30%" width="140%" height="170%"><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#1b2140" flood-opacity="0.1"/></filter>
+<marker id="arw" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#5b6279"/></marker>
+<marker id="arw-a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#4b67b4"/></marker>
+<marker id="arw-g" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#16804c"/></marker>
+<marker id="arw-r" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#b42318"/></marker>
+<marker id="arw-m" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#b26a00"/></marker>
+<marker id="arw-f" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#7a8196"/></marker>
+</defs>
+<rect width="1100" height="660" rx="22" fill="url(#bg)"/>
+<rect width="1100" height="660" rx="22" fill="url(#dots)"/>
+<text x="48" y="54" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="30" font-weight="700">dsh-provider-params</text>
+<text x="48" y="82" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="14">src/plugin/tools.ts · src/core/{rosetta,mapping,repair}.ts</text>
+<text x="1052" y="54" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="14" text-anchor="end">R0 · no network · no writes · no model call</text>
+<text x="1052" y="82" fill="#7a8196" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="14" text-anchor="end">11 vendors × 13 canonical fields</text>
+<line x1="48" y1="100" x2="1052" y2="100" stroke="#d6d3e6" stroke-width="1"/>
+<rect x="48" y="112" width="508" height="472" rx="20" fill="#fdfcff" stroke="#d6d3e6" stroke-width="1" filter="url(#soft)"/>
+<circle cx="72" cy="146" r="11" fill="#e7eaf7"/>
+<text x="72" y="150" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13" font-weight="700" text-anchor="middle">A</text>
+<text x="92" y="151" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="15" font-weight="700">params.map — per-field verdicts</text>
+<text x="532" y="151" fill="#7a8196" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" text-anchor="end">openai → anthropic</text>
+<rect x="68" y="164" width="468" height="84" rx="12" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
+<text x="82" y="186" fill="#4b67b4" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" letter-spacing="0.4">IN · params-request.json</text>
+<text x="82" y="210" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="14">temperature 1.35 · top_p 0.9 · max_tokens 512</text>
+<text x="82" y="233" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="14">stop ["\n\nHuman:"] · frequency_penalty 0.2</text>
+<rect x="68" y="266" width="340" height="40" rx="11" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
+<circle cx="88" cy="286" r="9" fill="#e7eaf7"/>
+<text x="88" y="290" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="11" font-weight="700" text-anchor="middle">1</text>
+<text x="106" y="283" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13.5" font-weight="700">recognized?</text>
+<text x="106" y="299" fill="#5b6279" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="11.5">13 canonical or source wire names</text>
+<path d="M408 286 H424" fill="none" stroke="#7a8196" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw-f)"/>
+<rect x="426" y="273" width="108" height="26" rx="8" fill="#f4f5fc" stroke="#7a8196" stroke-width="1"/>
+<text x="480" y="290" fill="#7a8196" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" text-anchor="middle">no → unknown</text>
+<rect x="68" y="316" width="340" height="40" rx="11" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
+<circle cx="88" cy="336" r="9" fill="#e7eaf7"/>
+<text x="88" y="340" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="11" font-weight="700" text-anchor="middle">2</text>
+<text x="106" y="333" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13.5" font-weight="700">target supports it?</text>
+<text x="106" y="349" fill="#5b6279" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="11.5">supported:false → drop</text>
+<path d="M408 336 H424" fill="none" stroke="#b42318" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw-r)"/>
+<rect x="426" y="323" width="108" height="26" rx="8" fill="#fcece9" stroke="#b42318" stroke-width="1"/>
+<text x="480" y="340" fill="#b42318" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" text-anchor="middle">no → dropped</text>
+<rect x="68" y="366" width="340" height="40" rx="11" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
+<circle cx="88" cy="386" r="9" fill="#e7eaf7"/>
+<text x="88" y="390" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="11" font-weight="700" text-anchor="middle">3</text>
+<text x="106" y="383" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13.5" font-weight="700">out of documented range?</text>
+<text x="106" y="399" fill="#5b6279" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="11.5">clamp only where documented</text>
+<path d="M408 386 H424" fill="none" stroke="#b26a00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw-m)"/>
+<rect x="426" y="373" width="108" height="26" rx="8" fill="#fcf3e3" stroke="#b26a00" stroke-width="1"/>
+<text x="480" y="390" fill="#b26a00" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5" text-anchor="middle">yes → adjusted</text>
+<path d="M238 406 V416" fill="none" stroke="#5b6279" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw)"/>
+<rect x="68" y="420" width="340" height="124" rx="14" fill="#e3f3ea" stroke="#16804c" stroke-width="1"/>
+<text x="84" y="444" fill="#16804c" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="14" font-weight="700">mapped</text>
+<text x="392" y="444" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11" text-anchor="end">target wire shape</text>
+<text x="84" y="470" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">temperature: 1</text>
+<text x="84" y="491" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">top_p: 0.9</text>
+<text x="84" y="512" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">max_tokens: 512</text>
+<text x="84" y="533" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">stop_sequences: ["..."]</text>
+<rect x="424" y="420" width="112" height="124" rx="14" fill="#f4f5fc" stroke="#4b67b4" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="438" y="444" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="14" font-weight="700">added</text>
+<text x="438" y="470" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">required</text>
+<text x="438" y="489" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">by target</text>
+<text x="438" y="508" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">no value</text>
+<text x="438" y="527" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">invented</text>
+<text x="68" y="570" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11">params.compare → 13 rows · params.vendors → 11 × 13</text>
+<text x="536" y="570" fill="#7a8196" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" text-anchor="end">R0 · read-only</text>
+<rect x="572" y="112" width="480" height="472" rx="20" fill="#fdfcff" stroke="#d6d3e6" stroke-width="1" filter="url(#soft)"/>
+<circle cx="596" cy="146" r="11" fill="#e7eaf7"/>
+<text x="596" y="150" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13" font-weight="700" text-anchor="middle">B</text>
+<text x="616" y="151" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="15" font-weight="700">json.repair — bounded loop</text>
+<text x="1032" y="151" fill="#7a8196" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11" text-anchor="end">max_steps 1..64 · default 8</text>
+<rect x="592" y="164" width="232" height="84" rx="12" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
+<text x="606" y="186" fill="#4b67b4" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" letter-spacing="0.4">IN · text</text>
+<text x="606" y="211" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">raw text or ```json fence</text>
+<text x="606" y="233" fill="#5b6279" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="11.5">caller-supplied · no file read</text>
+<path d="M708 248 V260" fill="none" stroke="#5b6279" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw)"/>
+<rect x="592" y="264" width="232" height="104" rx="12" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
+<text x="606" y="287" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="14" font-weight="700">normalize · parse</text>
+<text x="606" y="311" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">trim · extract fence</text>
+<text x="606" y="331" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">root must be { or [</text>
+<text x="606" y="351" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">JSON.parse → fail?</text>
+<rect x="840" y="254" width="192" height="128" rx="14" fill="#e7eaf7" stroke="#4b67b4" stroke-width="1" stroke-dasharray="6 4"/>
+<text x="856" y="278" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13.5" font-weight="700">strategy pass</text>
+<rect x="856" y="288" width="160" height="17" rx="6" fill="#fdfcff"/>
+<text x="866" y="300.5" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">escapeRepair</text>
+<rect x="856" y="309" width="160" height="17" rx="6" fill="#fdfcff"/>
+<text x="866" y="321.5" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">trailingComma</text>
+<rect x="856" y="330" width="160" height="17" rx="6" fill="#fdfcff"/>
+<text x="866" y="342.5" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">truncationClosure</text>
+<text x="1016" y="370" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.25" text-anchor="end">retry · ≤ max_steps 1..64</text>
+<path d="M824 290 H838" fill="none" stroke="#5b6279" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw)"/>
+<path d="M838 352 H826" fill="none" stroke="#5b6279" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw)"/>
+<path d="M708 368 V392" fill="none" stroke="#5b6279" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw)"/>
+<rect x="592" y="396" width="232" height="104" rx="12" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
+<text x="606" y="419" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="14" font-weight="700">fieldCompletion · validate</text>
+<text x="606" y="443" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">required → null</text>
+<text x="606" y="463" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">schema subset only</text>
+<text x="606" y="483" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="13">placeholders[] reported</text>
+<path d="M708 500 V510" fill="none" stroke="#5b6279" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arw)"/>
+<rect x="592" y="512" width="232" height="46" rx="12" fill="#e3f3ea" stroke="#16804c" stroke-width="1"/>
+<text x="608" y="542" fill="#16804c" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="15" font-weight="700">ok: true</text>
+<text x="816" y="542" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5" text-anchor="end">actions[] · value</text>
+<rect x="840" y="512" width="192" height="46" rx="12" fill="#fcece9" stroke="#b42318" stroke-width="1"/>
+<text x="856" y="542" fill="#b42318" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="15" font-weight="700">E_JSON_*</text>
+<text x="1016" y="542" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5" text-anchor="end">ok: false</text>
+<text x="592" y="576" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">E_JSON_*: NOT_CONTAINER · UNREPAIRABLE · SCHEMA_VIOLATION</text>
+<line x1="48" y1="602" x2="1052" y2="602" stroke="#d6d3e6" stroke-width="1"/>
+<text x="48" y="628" fill="#5b6279" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13">every verdict listed · no value invented</text>
+<text x="1052" y="628" fill="#7a8196" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13" text-anchor="end">4 tools · deterministic · Apache-2.0</text>
+</svg>

@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-dark.svg">
-  <img src="docs/assets/dsh-provider-params-flow-light.svg" width="100%" alt="dsh-provider-params का डेटा फ़्लो: params-request.json → params.map → mapped/dropped/added/adjusted/unknown; broken-tool-output.json → json.repair → actions/strategies; params.compare 13 पंक्तियाँ और params.vendors 11 विक्रेता × 13 फ़ील्ड; चारों टूल R0 रीड-ओनली हैं">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-hero-en-dark.webp">
+  <img src="docs/assets/dsh-provider-params-hero-en-light.webp" width="100%" alt="dsh-provider-params बैनर: बाईं ओर शीर्षक, दो मूल्य-वाक्य और संगतता; दाईं ओर पाँच पंक्तियों का निर्णय-लेजर (mapped / adjusted / dropped / added / unknown), जो वास्तविक quickstart परिणाम openai → anthropic से भरा है">
 </picture>
 
 # dsh-provider-params
@@ -36,6 +36,11 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 - **इनके लिए उपयुक्त**: OpenAI, Claude, Gemini, ERNIE, Qwen, DeepSeek, Mistral, Cohere, xAI, Groq और Azure OpenAI के बीच `temperature`, `top_p`, `max_tokens`, `stop`, `system` जैसे request फ़ील्ड ले जाना; यह जाँचना कि कोई parameter नाम बदला गया, छोड़ा गया, प्रलेखित सीमा में काटा गया, या लक्ष्य में अनिवार्य है पर स्रोत में नहीं है; किसी टूल के आउटपुट में कच्चे newline, trailing comma या कटी हुई string/container को पार्स करने से पहले ठीक करना।
 - **इनके लिए उपयुक्त नहीं**: गुम व्यावसायिक डेटा का अनुमान लगाना या किसी विक्रेता का API कॉल करना — यह पैकेज कभी मान नहीं बनाता और इसमें नेटवर्क पथ नहीं है; किसी विक्रेता SDK, प्रमाणीकरण, streaming या पूरी request रचना को बदलना — यह केवल parameter अंश और text पर काम करता है।
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params संरचना: पैनल A में params.map के तीन द्वार (पहचाना गया? लक्ष्य स्वीकारता है? दस्तावेज़ित सीमा से बाहर?) और उनके पार्श्व निकास unknown / dropped / adjusted, बचे फ़ील्ड mapped में, तथा लक्ष्य की अनिवार्य कमी बिना मान के added; पैनल B में json.repair का सीमित लूप: trim और फ़ेंस निष्कर्षण, parse, विफलता पर अधिकतम max_steps रणनीति चक्र (escapeRepair / trailingComma / truncationClosure) फिर parse पुनः, फिर fieldCompletion null भरता है और schema उपसमुच्चय जाँचा जाता है, अंत में ok या विफल-बंद E_JSON_*">
+</picture>
 
 ## तीन चरणों में शुरुआत
 

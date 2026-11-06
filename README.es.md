@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-dark.svg">
-  <img src="docs/assets/dsh-provider-params-flow-light.svg" width="100%" alt="Flujo de datos de dsh-provider-params: params-request.json → params.map → mapped/dropped/added/adjusted/unknown; broken-tool-output.json → json.repair → actions/strategies; params.compare 13 filas y params.vendors 11 proveedores × 13 campos; las cuatro herramientas son R0 de solo lectura">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-hero-en-dark.webp">
+  <img src="docs/assets/dsh-provider-params-hero-en-light.webp" width="100%" alt="Banner de dsh-provider-params: a la izquierda el título, dos frases de valor y la compatibilidad; a la derecha, un libro de veredictos de cinco filas (mapped / adjusted / dropped / added / unknown) con el resultado real del quickstart openai → anthropic">
 </picture>
 
 # dsh-provider-params
@@ -36,6 +36,11 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 - **Adecuado para**: mover `temperature`, `top_p`, `max_tokens`, `stop`, `system` y campos relacionados entre OpenAI, Claude, Gemini, ERNIE, Qwen, DeepSeek, Mistral, Cohere, xAI, Groq y Azure OpenAI; auditar si un parámetro fue renombrado, descartado, recortado a un rango documentado o es obligatorio en el destino pero falta en el origen; reparar la salida de una herramienta que trae saltos de línea sin escapar, comas finales o una cadena/contenedor truncado antes de parsearla.
 - **No adecuado para**: adivinar datos de negocio ausentes o llamar a la API de un proveedor — este paquete nunca inventa un valor y no tiene ruta de red; sustituir un SDK de proveedor, la autenticación, el streaming o la construcción completa de la petición — solo trabaja sobre un fragmento de parámetros y texto.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="Estructura de dsh-provider-params: panel A, las tres puertas de params.map (¿reconocida? ¿el destino la admite? ¿fuera del rango documentado?) con salidas laterales a unknown / dropped / adjusted, las que sobreviven van a mapped y la carencia obligatoria del destino va a added sin valor; panel B, el bucle acotado de json.repair: trim y extracción de valla, parse, hasta max_steps pasadas de estrategias (escapeRepair / trailingComma / truncationClosure) antes de reintentar parse, luego fieldCompletion escribe null y se valida el subconjunto de schema, terminando en ok o en un E_JSON_* de fallo cerrado">
+</picture>
 
 ## Instalación en tres pasos
 

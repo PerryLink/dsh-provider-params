@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-dark.svg">
-  <img src="docs/assets/dsh-provider-params-flow-light.svg" width="100%" alt="dsh-provider-params data flow: params-request.json → params.map → mapped/dropped/added/adjusted/unknown; broken-tool-output.json → json.repair → actions/strategies; params.compare 13 rows and params.vendors 11 vendors × 13 fields; all four tools are R0 read-only">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-hero-en-dark.webp">
+  <img src="docs/assets/dsh-provider-params-hero-en-light.webp" width="100%" alt="dsh-provider-params banner: title, two value lines and compatibility on the left; on the right, a five-row verdict ledger (mapped / adjusted / dropped / added / unknown) filled with the real quickstart result openai → anthropic">
 </picture>
 
 # dsh-provider-params
@@ -36,6 +36,11 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 - **A good fit**: moving `temperature`, `top_p`, `max_tokens`, `stop`, `system` and related request fields between OpenAI, Claude, Gemini, ERNIE, Qwen, DeepSeek, Mistral, Cohere, xAI, Groq, and Azure OpenAI; auditing whether a parameter was renamed, dropped, clamped to a documented range, or is required by the target but absent from the source; repairing tool output that contains raw newlines, trailing commas, or a truncated string/container before parsing it.
 - **Not a fit**: guessing missing business data or calling a vendor API — this package never invents a value and has no network path; replacing a vendor SDK, auth, streaming, or full request construction — it works on a parameter fragment and text only.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-v5-dark.svg">
+  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params structure: panel A, the three gates of params.map (recognized? target supports it? out of documented range?) with side exits into unknown / dropped / adjusted, survivors mapped, and a target-required gap added with no value; panel B, the bounded loop of json.repair — trim and fence extraction, parse, up to max_steps strategy passes (escapeRepair / trailingComma / truncationClosure) before parse is retried, then fieldCompletion writes null placeholders and the schema subset is validated, ending in ok or a fail-closed E_JSON_*">
+</picture>
 
 ## Three-step setup
 

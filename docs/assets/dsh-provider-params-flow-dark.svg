@@ -2,13 +2,13 @@
 <title>dsh-provider-params data flow</title>
 <rect width="1200" height="430" rx="18" fill="#0d1117"/>
 <text x="60" y="62" fill="#f0f6fc" font-family="ui-sans-serif,system-ui,sans-serif" font-size="30" font-weight="700">dsh-provider-params</text>
-<text x="60" y="94" fill="#8b949e" font-family="ui-monospace,monospace" font-size="16">params.map · params.compare · params.vendors · json.repair · R0 · no network · no writes</text>
+<text x="60" y="94" fill="#8b949e" font-family="ui-monospace,monospace" font-size="16">params_map · params_compare · params_vendors · json_repair · R0 · no network · no writes</text>
 <line x1="60" y1="116" x2="1140" y2="116" stroke="#30363d"/>
 <rect x="60" y="150" width="270" height="84" rx="14" fill="#161b22" stroke="#30363d" stroke-width="2"/>
 <text x="195" y="188" fill="#f0f6fc" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" font-weight="700">params-request.json</text>
 <text x="195" y="214" fill="#8b949e" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">openai · temperature 1.35</text>
 <rect x="390" y="150" width="200" height="84" rx="14" fill="#161b22" stroke="#4B67B4" stroke-width="2"/>
-<text x="490" y="188" fill="#f0f6fc" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" font-weight="700">params.map</text>
+<text x="490" y="188" fill="#f0f6fc" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" font-weight="700">params_map</text>
 <text x="490" y="214" fill="#8b949e" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">11 vendors · 13 fields</text>
 <path d="M336 192h40" stroke="#8b949e" stroke-width="3"/>
 <path d="M374 185l10 7-10 7" fill="none" stroke="#8b949e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -21,7 +21,7 @@
 <text x="195" y="308" fill="#f0f6fc" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" font-weight="700">broken-tool-output.json</text>
 <text x="195" y="334" fill="#8b949e" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">raw newline · trailing comma</text>
 <rect x="390" y="270" width="200" height="84" rx="14" fill="#161b22" stroke="#4B67B4" stroke-width="2"/>
-<text x="490" y="308" fill="#f0f6fc" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" font-weight="700">json.repair</text>
+<text x="490" y="308" fill="#f0f6fc" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" font-weight="700">json_repair</text>
 <text x="490" y="334" fill="#8b949e" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12">fixed pipeline · no model</text>
 <path d="M336 312h40" stroke="#8b949e" stroke-width="3"/>
 <path d="M374 305l10 7-10 7" fill="none" stroke="#8b949e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -30,5 +30,5 @@
 <rect x="650" y="270" width="490" height="84" rx="14" fill="#161b22" stroke="#3fb950" stroke-width="2"/>
 <text x="674" y="305" fill="#f0f6fc" font-family="ui-monospace,monospace" font-size="14">actions[] · strategies[]</text>
 <text x="674" y="331" fill="#f0f6fc" font-family="ui-monospace,monospace" font-size="14">placeholders[] · validated</text>
-<text x="60" y="400" fill="#8b949e" font-family="ui-monospace,monospace" font-size="13">params.compare → 13 rows · params.vendors → 11 vendors × 13 fields · deterministic · no model call</text>
+<text x="60" y="400" fill="#8b949e" font-family="ui-monospace,monospace" font-size="13">params_compare → 13 rows · params_vendors → 11 vendors × 13 fields · deterministic · no model call</text>
 </svg>

@@ -3,7 +3,7 @@
  *
  * Every tool is deterministic and local: no filesystem writes, no network, no
  * model call. Tool names are a stable API; `params.*` operate on the bundled
- * table and `json.repair` operates on caller-supplied text.
+ * table and `json_repair` operates on caller-supplied text.
  *
  * @module dsh-provider-params/plugin/tools
  */
@@ -70,7 +70,7 @@ const endpointSchema = {
 /** Build the four tool definitions. */
 export function createTools() {
   const map = defineTool({
-    name: 'params.map',
+    name: 'params_map',
     description:
       'Map an LLM request fragment from one vendor to another (11 vendors, 13 canonical fields). Returns the target wire shape plus dropped/added/adjusted/unknown parameters. Read-only, deterministic, no network.',
     parameters: {
@@ -95,7 +95,7 @@ export function createTools() {
       },
       render: (_args, value) =>
         text(
-          `params.map ${value.from} -> ${value.to}: mapped=${Object.keys(value.mapped as Record<string, unknown>).length} dropped=${value.dropped.length} added=${value.added.length} adjusted=${value.adjusted.length} unknown=${value.unknown.length}`,
+          `params_map ${value.from} -> ${value.to}: mapped=${Object.keys(value.mapped as Record<string, unknown>).length} dropped=${value.dropped.length} added=${value.added.length} adjusted=${value.adjusted.length} unknown=${value.unknown.length}`,
         ),
     },
     async execute(args) {
@@ -104,7 +104,7 @@ export function createTools() {
   })
 
   const compare = defineTool({
-    name: 'params.compare',
+    name: 'params_compare',
     description:
       'Compare the parameter semantics of two vendors: same/renamed/removed/added/absent per canonical field, with wire names and documented ranges. Read-only.',
     parameters: {
@@ -149,7 +149,7 @@ export function createTools() {
       },
       render: (_args, value) =>
         text(
-          `params.compare ${value.from} -> ${value.to}: same=${value.summary.same} renamed=${value.summary.renamed} removed=${value.summary.removed} added=${value.summary.added} absent=${value.summary.absent}`,
+          `params_compare ${value.from} -> ${value.to}: same=${value.summary.same} renamed=${value.summary.renamed} removed=${value.summary.removed} added=${value.summary.added} absent=${value.summary.absent}`,
         ),
     },
     async execute(args) {
@@ -158,7 +158,7 @@ export function createTools() {
   })
 
   const vendors = defineTool({
-    name: 'params.vendors',
+    name: 'params_vendors',
     description:
       'List supported vendors and their parameter fields (wire name, supported flag, required flag, documented range, notes). Read-only.',
     parameters: {
@@ -206,7 +206,7 @@ export function createTools() {
           },
         },
       },
-      render: (_args, value) => text(`params.vendors: ${value.count}/${vendorIds().length} vendors, ${paramList().length} fields each`),
+      render: (_args, value) => text(`params_vendors: ${value.count}/${vendorIds().length} vendors, ${paramList().length} fields each`),
     },
     async execute(args) {
       return listVendors({ vendor: args.vendor, include_unsupported: args.include_unsupported })
@@ -214,7 +214,7 @@ export function createTools() {
   })
 
   const repair = defineTool({
-    name: 'json.repair',
+    name: 'json_repair',
     description:
       'Deterministically repair broken JSON text: escape raw control characters, remove trailing commas, close truncated strings/containers, and complete declared required fields with null placeholders. Never fabricates data; returns every action. Read-only.',
     parameters: {
@@ -279,7 +279,7 @@ export function createTools() {
       },
       render: (_args, value) =>
         text(
-          `json.repair: ok=${value.ok} actions=${value.actions.length} strategies=${value.strategies.join(',') || 'none'} placeholders=${value.placeholders.length}`,
+          `json_repair: ok=${value.ok} actions=${value.actions.length} strategies=${value.strategies.join(',') || 'none'} placeholders=${value.placeholders.length}`,
         ),
     },
     async execute(args) {

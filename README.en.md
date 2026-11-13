@@ -9,7 +9,7 @@
 
 **Map request parameters across 11 LLM vendors, then repair broken JSON with fixed rules — every step leaves an auditable record.**
 
-A read-only toolkit for DeepSeek Harness: `params.map` / `params.compare` / `params.vendors` handle `temperature`, `top_p`, `max_tokens`, `stop`, `system` and related fields, while `json.repair` handles trailing commas, raw newlines, and truncation. No network, no file writes, no model calls.
+A read-only toolkit for DeepSeek Harness: `params_map` / `params_compare` / `params_vendors` handle `temperature`, `top_p`, `max_tokens`, `stop`, `system` and related fields, while `json_repair` handles trailing commas, raw newlines, and truncation. No network, no file writes, no model calls.
 
 [Install](#three-step-setup) · [Configuration](#configuration) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
@@ -32,14 +32,14 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 ## What it is
 
-`dsh-provider-params` maintains a parameter table of 11 vendors × 13 canonical fields, translates a request fragment from the source vendor's wire names to the target vendor's wire names, and reports what happened item by item: `mapped` is the result, `dropped` means the target has no equivalent, `added` means the target requires it but the input omitted it, `adjusted` means a documented range clamped it, and `unknown` means an unrecognized key. `params.compare` returns a 13-row semantic diff between two vendors, and `params.vendors` lists the field catalog. `json.repair` repairs broken JSON with a fixed sequence of text/structure strategies and returns every edit. All four tools are pure in-memory computation: no network, no file writes, no model calls.
+`dsh-provider-params` maintains a parameter table of 11 vendors × 13 canonical fields, translates a request fragment from the source vendor's wire names to the target vendor's wire names, and reports what happened item by item: `mapped` is the result, `dropped` means the target has no equivalent, `added` means the target requires it but the input omitted it, `adjusted` means a documented range clamped it, and `unknown` means an unrecognized key. `params_compare` returns a 13-row semantic diff between two vendors, and `params_vendors` lists the field catalog. `json_repair` repairs broken JSON with a fixed sequence of text/structure strategies and returns every edit. All four tools are pure in-memory computation: no network, no file writes, no model calls.
 
 - **A good fit**: moving `temperature`, `top_p`, `max_tokens`, `stop`, `system` and related request fields between OpenAI, Claude, Gemini, ERNIE, Qwen, DeepSeek, Mistral, Cohere, xAI, Groq, and Azure OpenAI; auditing whether a parameter was renamed, dropped, clamped to a documented range, or is required by the target but absent from the source; repairing tool output that contains raw newlines, trailing commas, or a truncated string/container before parsing it.
 - **Not a fit**: guessing missing business data or calling a vendor API — this package never invents a value and has no network path; replacing a vendor SDK, auth, streaming, or full request construction — it works on a parameter fragment and text only.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params structure: panel A, the three gates of params.map (recognized? target supports it? out of documented range?) with side exits into unknown / dropped / adjusted, survivors mapped, and a target-required gap added with no value; panel B, the bounded loop of json.repair — trim and fence extraction, parse, up to max_steps strategy passes (escapeRepair / trailingComma / truncationClosure) before parse is retried, then fieldCompletion writes null placeholders and the schema subset is validated, ending in ok or a fail-closed E_JSON_*">
+  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params structure: panel A, the three gates of params_map (recognized? target supports it? out of documented range?) with side exits into unknown / dropped / adjusted, survivors mapped, and a target-required gap added with no value; panel B, the bounded loop of json_repair — trim and fence extraction, parse, up to max_steps strategy passes (escapeRepair / trailingComma / truncationClosure) before parse is retried, then fieldCompletion writes null placeholders and the schema subset is validated, ending in ok or a fail-closed E_JSON_*">
 </picture>
 
 ## Three-step setup
@@ -72,7 +72,7 @@ dsh plugin --profile <profile> add dsh-provider-params
    node samples/quickstart/run.mjs
    ```
 
-   The sample prints the real `== params.map ==` and `== json.repair ==` results in order. Inside a session you can also just say:
+   The sample prints the real `== params_map ==` and `== json_repair ==` results in order. Inside a session you can also just say:
 
    ```text
    Use the bundled samples to convert my OpenAI temperature/top_p/max_tokens/stop into Anthropic parameters, then repair my broken JSON that has a raw newline.
@@ -82,10 +82,10 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 ## Core capabilities
 
-- **Cross-vendor parameter mapping** — `params.map` takes `from`, `to`, and a `params` object; fields may use source-vendor wire names or canonical names, and Google's `generationConfig` accepts nested or dotted form. It returns `mapped` / `dropped` / `added` / `adjusted` / `unknown`, and `strict: true` rejects unknown keys.
-- **Semantic diff audit** — `params.compare` classifies each field as `same / renamed / removed / added / absent` across 13 rows, with wire names, required flags, documented ranges, and notes on both sides.
-- **Vendor field catalog** — `params.vendors` lists 11 vendors and their 13 fields with name, support flag, required flag, range, and notes; optional `vendor` filter and `include_unsupported`.
-- **Deterministic JSON repair** — `json.repair` runs `escapeRepair`, `trailingComma`, `truncationClosure`, and `fieldCompletion` in a fixed order for at most 1–64 steps; `actions` records every edit and no business value is invented.
+- **Cross-vendor parameter mapping** — `params_map` takes `from`, `to`, and a `params` object; fields may use source-vendor wire names or canonical names, and Google's `generationConfig` accepts nested or dotted form. It returns `mapped` / `dropped` / `added` / `adjusted` / `unknown`, and `strict: true` rejects unknown keys.
+- **Semantic diff audit** — `params_compare` classifies each field as `same / renamed / removed / added / absent` across 13 rows, with wire names, required flags, documented ranges, and notes on both sides.
+- **Vendor field catalog** — `params_vendors` lists 11 vendors and their 13 fields with name, support flag, required flag, range, and notes; optional `vendor` filter and `include_unsupported`.
+- **Deterministic JSON repair** — `json_repair` runs `escapeRepair`, `trailingComma`, `truncationClosure`, and `fieldCompletion` in a fixed order for at most 1–64 steps; `actions` records every edit and no business value is invented.
 - **Read-only and auditable** — all four tools are R0: no file writes, no original-file changes, no network, no model calls; output exists only in the tool result.
 
 ### Tool surface
@@ -94,28 +94,28 @@ Tool names are a stable API; all four tools are read-only, deterministic, and ne
 
 | Tool | Purpose | Risk |
 |---|---|---|
-| `params.map` | Map a source-vendor request fragment to a target vendor and report mapped/dropped/added/adjusted/unknown | R0 |
-| `params.compare` | 13-row semantic parameter comparison between two vendors | R0 |
-| `params.vendors` | List 11 vendors and their fields | R0 |
-| `json.repair` | Deterministically repair broken JSON and return the action list and placeholders | R0 |
+| `params_map` | Map a source-vendor request fragment to a target vendor and report mapped/dropped/added/adjusted/unknown | R0 |
+| `params_compare` | 13-row semantic parameter comparison between two vendors | R0 |
+| `params_vendors` | List 11 vendors and their fields | R0 |
+| `json_repair` | Deterministically repair broken JSON and return the action list and placeholders | R0 |
 
 ### Input and output
 
 **Input**
 
-- `params.map`: `from`, `to`, and a JSON `params` object. Fields may use source-vendor wire names or canonical names; Google's `generationConfig` may be nested or dotted. Optional `strict: true` rejects unknown keys.
-- `params.compare`: two vendor ids.
-- `params.vendors`: optional `vendor` filter and `include_unsupported`.
-- `json.repair`: `text` (UTF-8, fences accepted), optional `schema` (subset: `type/properties/required/additionalProperties/items/enum/const`), optional four strategy switches, optional `max_steps` 1–64.
+- `params_map`: `from`, `to`, and a JSON `params` object. Fields may use source-vendor wire names or canonical names; Google's `generationConfig` may be nested or dotted. Optional `strict: true` rejects unknown keys.
+- `params_compare`: two vendor ids.
+- `params_vendors`: optional `vendor` filter and `include_unsupported`.
+- `json_repair`: `text` (UTF-8, fences accepted), optional `schema` (subset: `type/properties/required/additionalProperties/items/enum/const`), optional four strategy switches, optional `max_steps` 1–64.
 - Scale: text is scanned in memory and constrained by the host's per-tool-call argument limit; the package reads no files.
 - Bundled samples: `samples/quickstart/input/params-request.json` and `samples/quickstart/input/broken-tool-output.json`.
 
 **Output**
 
-- `params.map`: the target wire object (`mapped`) plus `dropped` (no equivalent), `added` (required by the target but absent from the input, **without a value**), `adjusted` (clamped to a documented range), and `unknown` (unrecognized keys).
-- `params.compare`: 13 semantic rows classified `same / renamed / removed / added / absent`, with both wire names, required flags, documented ranges, and notes.
-- `params.vendors`: supported vendors and their fields (name, support flag, required flag, range, notes).
-- `json.repair`: `ok`, `repaired` (text or `null`), `value`, `actions` (every edit), `strategies`, `truncated`, `validated`, `placeholders`, `error`.
+- `params_map`: the target wire object (`mapped`) plus `dropped` (no equivalent), `added` (required by the target but absent from the input, **without a value**), `adjusted` (clamped to a documented range), and `unknown` (unrecognized keys).
+- `params_compare`: 13 semantic rows classified `same / renamed / removed / added / absent`, with both wire names, required flags, documented ranges, and notes.
+- `params_vendors`: supported vendors and their fields (name, support flag, required flag, range, notes).
+- `json_repair`: `ok`, `repaired` (text or `null`), `value`, `actions` (every edit), `strategies`, `truncated`, `validated`, `placeholders`, `error`.
 - Nothing is written to disk and the input file is never modified. All four tools are R0 (read-only).
 
 ### Examples
@@ -131,7 +131,7 @@ node samples/quickstart/run.mjs
 
 ![Real dsh-provider-params test run: 24 mapping and repair tests passed](docs/assets/quickstart.png)
 
-*The screenshot is rendered from real `node --test test/params.test.mjs test/repair.test.mjs` output (24/24 passed); the command, date, and hash are recorded in `screenshots.json`. The full suite is 4 test files and 35 cases.*
+*The screenshot is rendered from real `node --test test/params.test.mjs test/repair.test.mjs` output (24/24 passed); the command, date, and hash are recorded in `screenshots.json`. The full suite is 5 test files and 36 cases.*
 
 ### Mapping rules
 
@@ -152,7 +152,7 @@ The pipeline is fixed and never calls a model:
 | `truncationClosure` | Closes a truncated string and open containers | Guess missing business data |
 | `fieldCompletion` | Writes `null` for a missing required field on an existing object | Create a missing parent object or invent a value |
 
-`json.repair` accepts object/array roots only; other roots return `E_JSON_NOT_CONTAINER`. The schema subset is `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`. Other keywords are rejected with `E_JSON_SCHEMA_UNSUPPORTED` rather than validating nothing. A value that still violates the schema fails closed with `E_JSON_SCHEMA_VIOLATION`, and the original broken text is never reported as success.
+`json_repair` accepts object/array roots only; other roots return `E_JSON_NOT_CONTAINER`. The schema subset is `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`. Other keywords are rejected with `E_JSON_SCHEMA_UNSUPPORTED` rather than validating nothing. A value that still violates the schema fails closed with `E_JSON_SCHEMA_VIOLATION`, and the original broken text is never reported as success.
 
 ## Measured data
 
@@ -177,28 +177,28 @@ Most-used parameters:
 
 | Parameter | Tool | Default | Meaning |
 |---|---|---|---|
-| `from` | `params.map` / `params.compare` | required | Source vendor id; see `params.vendors` for the 11 ids |
-| `to` | `params.map` / `params.compare` | required | Target vendor id |
-| `params` | `params.map` | required | Request fragment; source wire names or canonical names |
-| `strict` | `params.map` | `false` | `true` rejects unknown keys with `E_PARAMS_UNKNOWN_PARAM` |
-| `text` | `json.repair` | required | JSON text to repair; markdown fences accepted |
-| `max_steps` | `json.repair` | `8` | Scan/apply passes for text/structure repair, 1–64 |
+| `from` | `params_map` / `params_compare` | required | Source vendor id; see `params_vendors` for the 11 ids |
+| `to` | `params_map` / `params_compare` | required | Target vendor id |
+| `params` | `params_map` | required | Request fragment; source wire names or canonical names |
+| `strict` | `params_map` | `false` | `true` rejects unknown keys with `E_PARAMS_UNKNOWN_PARAM` |
+| `text` | `json_repair` | required | JSON text to repair; markdown fences accepted |
+| `max_steps` | `json_repair` | `8` | Scan/apply passes for text/structure repair, 1–64 |
 
 <details>
 <summary>Full parameter table (10 entries)</summary>
 
 | Parameter | Tool | Default | Meaning |
 |---|---|---|---|
-| `from` | `params.map` / `params.compare` | required | Source vendor id |
-| `to` | `params.map` / `params.compare` | required | Target vendor id |
-| `params` | `params.map` | required | Request fragment |
-| `strict` | `params.map` | `false` | Whether unknown keys fail |
-| `vendor` | `params.vendors` | all | List one vendor only; case-insensitive |
-| `include_unsupported` | `params.vendors` | `false` | Include fields with no equivalent |
-| `text` | `json.repair` | required | JSON text to repair |
-| `schema` | `json.repair` | none | Schema in the supported subset, used for completion and final validation |
-| `strategies` | `json.repair` | all four on | `escape_repair` / `trailing_comma` / `truncation_closure` / `field_completion` |
-| `max_steps` | `json.repair` | `8` | Integer 1–64 |
+| `from` | `params_map` / `params_compare` | required | Source vendor id |
+| `to` | `params_map` / `params_compare` | required | Target vendor id |
+| `params` | `params_map` | required | Request fragment |
+| `strict` | `params_map` | `false` | Whether unknown keys fail |
+| `vendor` | `params_vendors` | all | List one vendor only; case-insensitive |
+| `include_unsupported` | `params_vendors` | `false` | Include fields with no equivalent |
+| `text` | `json_repair` | required | JSON text to repair |
+| `schema` | `json_repair` | none | Schema in the supported subset, used for completion and final validation |
+| `strategies` | `json_repair` | all four on | `escape_repair` / `trailing_comma` / `truncation_closure` / `field_completion` |
+| `max_steps` | `json_repair` | `8` | Integer 1–64 |
 
 </details>
 
@@ -214,14 +214,14 @@ Check that the profile loaded this package: `dsh --profile <profile> --dump-conf
 <details>
 <summary>The mapped result looks different from what I expected.</summary>
 
-Inspect `dropped` and `adjusted` first: the target may have no equivalent, or a documented range may have clamped the value. Use `params.compare` to see both wire names and ranges. Unknown keys appear in `unknown`; they never silently enter the result.
+Inspect `dropped` and `adjusted` first: the target may have no equivalent, or a documented range may have clamped the value. Use `params_compare` to see both wire names and ranges. Unknown keys appear in `unknown`; they never silently enter the result.
 
 </details>
 
 <details>
 <summary>Can it process my files?</summary>
 
-Not directly. Pass JSON text as `json.repair.text` and a parameter object as `params.map.params`. It does not read disk, call the network, or call a model.
+Not directly. Pass JSON text as `json_repair.text` and a parameter object as `params_map.params`. It does not read disk, call the network, or call a model.
 
 </details>
 
@@ -243,7 +243,7 @@ This package rewrites the vendor parameter mapping and deterministic JSON repair
 
 - **Read-only, never persisted.** All four tools write no files and modify no originals; output exists only in the tool result, and no state survives the call.
 - **No network, no model calls.** The source contains no HTTP / DNS / WebSocket calls and no model-call path; `dsh.demo.network` is `false`.
-- **No invented values.** `added` reports target-required fields that are missing, without values; `json.repair` field completion writes only `null` placeholders, reports their paths in `placeholders`, and leaves real values to the caller.
+- **No invented values.** `added` reports target-required fields that are missing, without values; `json_repair` field completion writes only `null` placeholders, reports their paths in `placeholders`, and leaves real values to the caller.
 - **Ranges clamp only where documented.** ERNIE `temperature` (0.01..1) and Anthropic `temperature` (0..1) are the only explicit clamps; notes on other vendors never rewrite a value.
 - **Fail closed.** Unsupported schema keywords, a value that still violates the schema, unknown strategy names, and an out-of-range `max_steps` all fail loudly; the original broken text is never reported as success.
 
@@ -258,7 +258,7 @@ This package rewrites the vendor parameter mapping and deterministic JSON repair
 
 | Code | Meaning | Next step |
 |---|---|---|
-| `E_PARAMS_UNKNOWN_VENDOR` | Vendor id is not in the table | Use `params.vendors` to see the 11 ids |
+| `E_PARAMS_UNKNOWN_VENDOR` | Vendor id is not in the table | Use `params_vendors` to see the 11 ids |
 | `E_PARAMS_UNKNOWN_PARAM` | Unknown key under `strict: true` | Remove the key or use `strict: false` |
 | `E_PARAMS_CONFLICT` | One parameter supplied twice with different values | Keep a single spelling |
 | `E_JSON_NOT_CONTAINER` | Text root is not an object or array | Pass the `{...}` / `[...]` fragment from the tool output |
@@ -307,13 +307,13 @@ node scripts/gate.mjs
 
 `node scripts/gate.mjs` runs lint, `tsc --noEmit`, the build, the acceptance script, and every test. Acceptance rows are written to `ACCEPTANCE.csv` as public/synthetic, `counted=false`.
 
-Current version `0.1.0` (matches `package.json`); the test suite has 4 files and 35 cases. Layout:
+Current version `0.2.0` (matches `package.json`); the test suite has 5 files and 36 cases. Layout:
 
 | Path | Contents |
 |---|---|
 | `src/core/` | Pure-function core: `rosetta` (table), `mapping`, `repair`, `json`, `errors`; no Cordis dependency |
 | `src/plugin/` | `index.ts` (apply) and `tools.ts` (the four tool definitions) |
-| `test/` | `params` / `repair` / `plugin-smoke` / `samples` `node --test` suites |
+| `test/` | `params` / `repair` / `plugin-smoke` / `samples` / `tool-name-wire` `node --test` suites |
 | `samples/quickstart/` | Synthetic inputs, golden outputs, and `run.mjs` |
 | `scripts/` | `acceptance.mjs`, `gate.mjs`, `lint.mjs`, `gen-readme-assets.py` |
 | `docs/assets/` | README images (light/dark hero SVG, quickstart screenshot) |

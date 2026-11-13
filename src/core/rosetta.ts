@@ -11,7 +11,7 @@
  * same PerryLink-owned data, Apache-2.0) into a typed shape. The three
  * `ported` vendors (OpenAI, ERNIE, Qwen) come from GPT-Rosetta-Stone; the
  * `extended` rows follow each vendor's public API reference. A cell marked
- * `supported: false` has no equivalent and is dropped by `params.map` instead
+ * `supported: false` has no equivalent and is dropped by `params_map` instead
  * of being guessed.
  *
  * @module dsh-provider-params/core/rosetta
@@ -33,7 +33,7 @@ export interface ParamCell {
   readonly name: string | null
   /** Whether this vendor accepts the parameter in some form. */
   readonly supported: boolean
-  /** Documented range enforced by `params.map` (only where the source states one). */
+  /** Documented range enforced by `params_map` (only where the source states one). */
   readonly clamp?: Clamp
   /** Whether the vendor's request shape requires the field. */
   readonly required?: boolean

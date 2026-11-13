@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" viewBox="0 0 1100 660" role="img" aria-label="dsh-provider-params structure: params.map sorts every field through three gates into five verdict lists; json.repair runs a bounded normalize-parse-strategy loop and stops at ok or E_JSON_*">
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" viewBox="0 0 1100 660" role="img" aria-label="dsh-provider-params structure: params_map sorts every field through three gates into five verdict lists; json_repair runs a bounded normalize-parse-strategy loop and stops at ok or E_JSON_*">
 <title>dsh-provider-params structure: verdict gates + bounded repair loop</title>
-<desc>Panel A: params.map reads the 11-by-13 table; each input key passes a recognised? gate (else unknown), a target-support gate (else dropped) and a documented-range gate (else adjusted), survivors land in mapped, and target-required gaps become added with no value. Panel B: json.repair trims and extracts a fence, parses, retries a bounded strategy pass (escapeRepair, trailingComma, truncationClosure) at most max_steps times, completes required fields with null, validates against the supported schema subset, then returns ok or a fail-closed E_JSON_* error.</desc>
+<desc>Panel A: params_map reads the 11-by-13 table; each input key passes a recognised? gate (else unknown), a target-support gate (else dropped) and a documented-range gate (else adjusted), survivors land in mapped, and target-required gaps become added with no value. Panel B: json_repair trims and extracts a fence, parses, retries a bounded strategy pass (escapeRepair, trailingComma, truncationClosure) at most max_steps times, completes required fields with null, validates against the supported schema subset, then returns ok or a fail-closed E_JSON_* error.</desc>
 <defs>
 <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f9f6fd"/><stop offset="1" stop-color="#e4eaf8"/></linearGradient>
 <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#4b67b4" opacity="0.08"/></pattern>
@@ -22,7 +22,7 @@
 <rect x="48" y="112" width="508" height="472" rx="20" fill="#fdfcff" stroke="#d6d3e6" stroke-width="1" filter="url(#soft)"/>
 <circle cx="72" cy="146" r="11" fill="#e7eaf7"/>
 <text x="72" y="150" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13" font-weight="700" text-anchor="middle">A</text>
-<text x="92" y="151" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="15" font-weight="700">params.map — per-field verdicts</text>
+<text x="92" y="151" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="15" font-weight="700">params_map — per-field verdicts</text>
 <text x="532" y="151" fill="#7a8196" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" text-anchor="end">openai → anthropic</text>
 <rect x="68" y="164" width="468" height="84" rx="12" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
 <text x="82" y="186" fill="#4b67b4" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" letter-spacing="0.4">IN · params-request.json</text>
@@ -66,12 +66,12 @@
 <text x="438" y="489" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">by target</text>
 <text x="438" y="508" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">no value</text>
 <text x="438" y="527" fill="#1b2140" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11.5">invented</text>
-<text x="68" y="570" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11">params.compare → 13 rows · params.vendors → 11 × 13</text>
+<text x="68" y="570" fill="#5b6279" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11">params_compare → 13 rows · params_vendors → 11 × 13</text>
 <text x="536" y="570" fill="#7a8196" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" text-anchor="end">R0 · read-only</text>
 <rect x="572" y="112" width="480" height="472" rx="20" fill="#fdfcff" stroke="#d6d3e6" stroke-width="1" filter="url(#soft)"/>
 <circle cx="596" cy="146" r="11" fill="#e7eaf7"/>
 <text x="596" y="150" fill="#4b67b4" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="13" font-weight="700" text-anchor="middle">B</text>
-<text x="616" y="151" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="15" font-weight="700">json.repair — bounded loop</text>
+<text x="616" y="151" fill="#1b2140" font-family="ui-sans-serif,system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif" font-size="15" font-weight="700">json_repair — bounded loop</text>
 <text x="1032" y="151" fill="#7a8196" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="11" text-anchor="end">max_steps 1..64 · default 8</text>
 <rect x="592" y="164" width="232" height="84" rx="12" fill="#f4f5fc" stroke="#d6d3e6" stroke-width="1"/>
 <text x="606" y="186" fill="#4b67b4" font-family="ui-monospace,SFMono-Regular,'Cascadia Mono',Consolas,'Liberation Mono',monospace" font-size="12" letter-spacing="0.4">IN · text</text>

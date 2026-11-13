@@ -9,7 +9,7 @@
 
 **11 LLM विक्रेताओं के बीच request parameters को मैप करें और टूटे JSON को तय नियमों से ठीक करें — हर कदम का ऑडिटेबल रिकॉर्ड रहता है।**
 
-DeepSeek Harness के लिए रीड-ओनली टूलकिट: `params.map` / `params.compare` / `params.vendors` `temperature`, `top_p`, `max_tokens`, `stop`, `system` जैसे फ़ील्ड संभालते हैं, और `json.repair` trailing comma, कच्चे newline तथा truncation को ठीक करता है। कोई नेटवर्क नहीं, कोई फ़ाइल लेखन नहीं, कोई मॉडल कॉल नहीं।
+DeepSeek Harness के लिए रीड-ओनली टूलकिट: `params_map` / `params_compare` / `params_vendors` `temperature`, `top_p`, `max_tokens`, `stop`, `system` जैसे फ़ील्ड संभालते हैं, और `json_repair` trailing comma, कच्चे newline तथा truncation को ठीक करता है। कोई नेटवर्क नहीं, कोई फ़ाइल लेखन नहीं, कोई मॉडल कॉल नहीं।
 
 [इंस्टॉल](#तीन-चरणों-में-शुरुआत) · [कॉन्फ़िगरेशन](#कॉन्फ़िगरेशन) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
@@ -32,14 +32,14 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 ## यह क्या है
 
-`dsh-provider-params` 11 विक्रेताओं × 13 canonical फ़ील्ड की एक parameter तालिका रखता है, किसी request अंश को स्रोत विक्रेता के wire names से लक्ष्य विक्रेता के wire names में अनुवाद करता है, और हर मद पर बताता है कि क्या हुआ: `mapped` परिणाम है, `dropped` का अर्थ है कि लक्ष्य में इसका समतुल्य नहीं है, `added` का अर्थ है कि लक्ष्य में यह अनिवार्य है पर इनपुट ने नहीं दिया, `adjusted` का अर्थ है कि किसी प्रलेखित सीमा ने इसे काटा, और `unknown` का अर्थ है कि कुंजी पहचानी नहीं गई। `params.compare` दो विक्रेताओं के बीच 13 पंक्तियों का semantic diff देता है, और `params.vendors` फ़ील्ड सूची दिखाता है। `json.repair` टूटे JSON को text/structure रणनीतियों के तय क्रम से ठीक करता है और हर संपादन लौटाता है। चारों टूल केवल मेमोरी में गणना करते हैं: कोई नेटवर्क नहीं, कोई फ़ाइल लेखन नहीं, कोई मॉडल कॉल नहीं।
+`dsh-provider-params` 11 विक्रेताओं × 13 canonical फ़ील्ड की एक parameter तालिका रखता है, किसी request अंश को स्रोत विक्रेता के wire names से लक्ष्य विक्रेता के wire names में अनुवाद करता है, और हर मद पर बताता है कि क्या हुआ: `mapped` परिणाम है, `dropped` का अर्थ है कि लक्ष्य में इसका समतुल्य नहीं है, `added` का अर्थ है कि लक्ष्य में यह अनिवार्य है पर इनपुट ने नहीं दिया, `adjusted` का अर्थ है कि किसी प्रलेखित सीमा ने इसे काटा, और `unknown` का अर्थ है कि कुंजी पहचानी नहीं गई। `params_compare` दो विक्रेताओं के बीच 13 पंक्तियों का semantic diff देता है, और `params_vendors` फ़ील्ड सूची दिखाता है। `json_repair` टूटे JSON को text/structure रणनीतियों के तय क्रम से ठीक करता है और हर संपादन लौटाता है। चारों टूल केवल मेमोरी में गणना करते हैं: कोई नेटवर्क नहीं, कोई फ़ाइल लेखन नहीं, कोई मॉडल कॉल नहीं।
 
 - **इनके लिए उपयुक्त**: OpenAI, Claude, Gemini, ERNIE, Qwen, DeepSeek, Mistral, Cohere, xAI, Groq और Azure OpenAI के बीच `temperature`, `top_p`, `max_tokens`, `stop`, `system` जैसे request फ़ील्ड ले जाना; यह जाँचना कि कोई parameter नाम बदला गया, छोड़ा गया, प्रलेखित सीमा में काटा गया, या लक्ष्य में अनिवार्य है पर स्रोत में नहीं है; किसी टूल के आउटपुट में कच्चे newline, trailing comma या कटी हुई string/container को पार्स करने से पहले ठीक करना।
 - **इनके लिए उपयुक्त नहीं**: गुम व्यावसायिक डेटा का अनुमान लगाना या किसी विक्रेता का API कॉल करना — यह पैकेज कभी मान नहीं बनाता और इसमें नेटवर्क पथ नहीं है; किसी विक्रेता SDK, प्रमाणीकरण, streaming या पूरी request रचना को बदलना — यह केवल parameter अंश और text पर काम करता है।
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params संरचना: पैनल A में params.map के तीन द्वार (पहचाना गया? लक्ष्य स्वीकारता है? दस्तावेज़ित सीमा से बाहर?) और उनके पार्श्व निकास unknown / dropped / adjusted, बचे फ़ील्ड mapped में, तथा लक्ष्य की अनिवार्य कमी बिना मान के added; पैनल B में json.repair का सीमित लूप: trim और फ़ेंस निष्कर्षण, parse, विफलता पर अधिकतम max_steps रणनीति चक्र (escapeRepair / trailingComma / truncationClosure) फिर parse पुनः, फिर fieldCompletion null भरता है और schema उपसमुच्चय जाँचा जाता है, अंत में ok या विफल-बंद E_JSON_*">
+  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params संरचना: पैनल A में params_map के तीन द्वार (पहचाना गया? लक्ष्य स्वीकारता है? दस्तावेज़ित सीमा से बाहर?) और उनके पार्श्व निकास unknown / dropped / adjusted, बचे फ़ील्ड mapped में, तथा लक्ष्य की अनिवार्य कमी बिना मान के added; पैनल B में json_repair का सीमित लूप: trim और फ़ेंस निष्कर्षण, parse, विफलता पर अधिकतम max_steps रणनीति चक्र (escapeRepair / trailingComma / truncationClosure) फिर parse पुनः, फिर fieldCompletion null भरता है और schema उपसमुच्चय जाँचा जाता है, अंत में ok या विफल-बंद E_JSON_*">
 </picture>
 
 ## तीन चरणों में शुरुआत
@@ -72,7 +72,7 @@ dsh plugin --profile <profile> add dsh-provider-params
    node samples/quickstart/run.mjs
    ```
 
-   नमूना क्रम से असली `== params.map ==` और `== json.repair ==` परिणाम छापता है। सेशन में सीधे यह भी कह सकते हैं:
+   नमूना क्रम से असली `== params_map ==` और `== json_repair ==` परिणाम छापता है। सेशन में सीधे यह भी कह सकते हैं:
 
    ```text
    बंडल किए गए नमूनों से मेरे OpenAI के temperature/top_p/max_tokens/stop को Anthropic parameters में बदलें, फिर मेरे टूटे JSON को ठीक करें जिसमें कच्चा newline है।
@@ -82,10 +82,10 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 ## मुख्य क्षमताएँ
 
-- **विक्रेताओं के बीच parameter मैपिंग** — `params.map` `from`, `to` और `params` ऑब्जेक्ट लेता है; फ़ील्ड स्रोत विक्रेता के wire names या canonical नामों में हो सकते हैं, और Google का `generationConfig` nested या dotted रूप स्वीकार करता है। यह `mapped` / `dropped` / `added` / `adjusted` / `unknown` लौटाता है, और `strict: true` अज्ञात कुंजियों को अस्वीकार करता है।
-- **semantic अंतर ऑडिट** — `params.compare` हर फ़ील्ड को 13 पंक्तियों में `same / renamed / removed / added / absent` के रूप में वर्गीकृत करता है, साथ में दोनों ओर के wire names, अनिवार्यता, प्रलेखित सीमाएँ और नोट्स।
-- **विक्रेता फ़ील्ड सूची** — `params.vendors` 11 विक्रेताओं और उनके 13 फ़ील्ड को नाम, समर्थन, अनिवार्यता, सीमा और नोट्स के साथ सूचीबद्ध करता है; वैकल्पिक `vendor` फ़िल्टर और `include_unsupported`।
-- **नियतात्मक JSON रिपेयर** — `json.repair` `escapeRepair`, `trailingComma`, `truncationClosure` और `fieldCompletion` को तय क्रम में अधिकतम 1–64 चरणों तक चलाता है; `actions` हर संपादन दर्ज करता है और कोई व्यावसायिक मान नहीं बनाया जाता।
+- **विक्रेताओं के बीच parameter मैपिंग** — `params_map` `from`, `to` और `params` ऑब्जेक्ट लेता है; फ़ील्ड स्रोत विक्रेता के wire names या canonical नामों में हो सकते हैं, और Google का `generationConfig` nested या dotted रूप स्वीकार करता है। यह `mapped` / `dropped` / `added` / `adjusted` / `unknown` लौटाता है, और `strict: true` अज्ञात कुंजियों को अस्वीकार करता है।
+- **semantic अंतर ऑडिट** — `params_compare` हर फ़ील्ड को 13 पंक्तियों में `same / renamed / removed / added / absent` के रूप में वर्गीकृत करता है, साथ में दोनों ओर के wire names, अनिवार्यता, प्रलेखित सीमाएँ और नोट्स।
+- **विक्रेता फ़ील्ड सूची** — `params_vendors` 11 विक्रेताओं और उनके 13 फ़ील्ड को नाम, समर्थन, अनिवार्यता, सीमा और नोट्स के साथ सूचीबद्ध करता है; वैकल्पिक `vendor` फ़िल्टर और `include_unsupported`।
+- **नियतात्मक JSON रिपेयर** — `json_repair` `escapeRepair`, `trailingComma`, `truncationClosure` और `fieldCompletion` को तय क्रम में अधिकतम 1–64 चरणों तक चलाता है; `actions` हर संपादन दर्ज करता है और कोई व्यावसायिक मान नहीं बनाया जाता।
 - **रीड-ओनली और ऑडिटेबल** — चारों टूल R0 हैं: कोई फ़ाइल लेखन नहीं, कोई मूल फ़ाइल परिवर्तन नहीं, कोई नेटवर्क नहीं, कोई मॉडल कॉल नहीं; आउटपुट केवल टूल परिणाम में रहता है।
 
 ### टूल सतह
@@ -94,28 +94,28 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 | टूल | उद्देश्य | जोखिम |
 |---|---|---|
-| `params.map` | स्रोत विक्रेता के request अंश को लक्ष्य विक्रेता में मैप करना और mapped/dropped/added/adjusted/unknown बताना | R0 |
-| `params.compare` | दो विक्रेताओं के बीच 13 पंक्तियों की semantic parameter तुलना | R0 |
-| `params.vendors` | 11 विक्रेताओं और उनके फ़ील्ड की सूची | R0 |
-| `json.repair` | टूटे JSON को नियतात्मक रूप से ठीक करना और action सूची तथा placeholders लौटाना | R0 |
+| `params_map` | स्रोत विक्रेता के request अंश को लक्ष्य विक्रेता में मैप करना और mapped/dropped/added/adjusted/unknown बताना | R0 |
+| `params_compare` | दो विक्रेताओं के बीच 13 पंक्तियों की semantic parameter तुलना | R0 |
+| `params_vendors` | 11 विक्रेताओं और उनके फ़ील्ड की सूची | R0 |
+| `json_repair` | टूटे JSON को नियतात्मक रूप से ठीक करना और action सूची तथा placeholders लौटाना | R0 |
 
 ### इनपुट और आउटपुट
 
 **इनपुट**
 
-- `params.map`: `from`, `to` और JSON ऑब्जेक्ट `params`। फ़ील्ड स्रोत विक्रेता के wire names या canonical नामों में हो सकते हैं; Google का `generationConfig` nested या dotted हो सकता है। वैकल्पिक `strict: true` अज्ञात कुंजियों को अस्वीकार करता है।
-- `params.compare`: दो विक्रेता ids।
-- `params.vendors`: वैकल्पिक `vendor` फ़िल्टर और `include_unsupported`।
-- `json.repair`: `text` (UTF-8, Markdown fences स्वीकार), वैकल्पिक `schema` (उपसमुच्चय: `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`), चार वैकल्पिक strategy स्विच और वैकल्पिक `max_steps` 1–64।
+- `params_map`: `from`, `to` और JSON ऑब्जेक्ट `params`। फ़ील्ड स्रोत विक्रेता के wire names या canonical नामों में हो सकते हैं; Google का `generationConfig` nested या dotted हो सकता है। वैकल्पिक `strict: true` अज्ञात कुंजियों को अस्वीकार करता है।
+- `params_compare`: दो विक्रेता ids।
+- `params_vendors`: वैकल्पिक `vendor` फ़िल्टर और `include_unsupported`।
+- `json_repair`: `text` (UTF-8, Markdown fences स्वीकार), वैकल्पिक `schema` (उपसमुच्चय: `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`), चार वैकल्पिक strategy स्विच और वैकल्पिक `max_steps` 1–64।
 - पैमाना: text मेमोरी में स्कैन होता है और host की प्रति टूल-कॉल argument सीमा तक बंधा है; पैकेज कोई फ़ाइल नहीं पढ़ता।
 - शामिल नमूने: `samples/quickstart/input/params-request.json` और `samples/quickstart/input/broken-tool-output.json`।
 
 **आउटपुट**
 
-- `params.map`: लक्ष्य का wire ऑब्जेक्ट (`mapped`) तथा `dropped` (कोई समतुल्य नहीं), `added` (लक्ष्य में अनिवार्य पर इनपुट में नहीं, **मान के बिना**), `adjusted` (प्रलेखित सीमा में काटा गया) और `unknown` (अपहचानी कुंजियाँ)।
-- `params.compare`: 13 semantic पंक्तियाँ `same / renamed / removed / added / absent` के रूप में, दोनों wire names, अनिवार्यता, प्रलेखित सीमाएँ और नोट्स के साथ।
-- `params.vendors`: समर्थित विक्रेता और उनके फ़ील्ड (नाम, समर्थन, अनिवार्यता, सीमा, नोट्स)।
-- `json.repair`: `ok`, `repaired` (text या `null`), `value`, `actions` (हर संपादन), `strategies`, `truncated`, `validated`, `placeholders`, `error`।
+- `params_map`: लक्ष्य का wire ऑब्जेक्ट (`mapped`) तथा `dropped` (कोई समतुल्य नहीं), `added` (लक्ष्य में अनिवार्य पर इनपुट में नहीं, **मान के बिना**), `adjusted` (प्रलेखित सीमा में काटा गया) और `unknown` (अपहचानी कुंजियाँ)।
+- `params_compare`: 13 semantic पंक्तियाँ `same / renamed / removed / added / absent` के रूप में, दोनों wire names, अनिवार्यता, प्रलेखित सीमाएँ और नोट्स के साथ।
+- `params_vendors`: समर्थित विक्रेता और उनके फ़ील्ड (नाम, समर्थन, अनिवार्यता, सीमा, नोट्स)।
+- `json_repair`: `ok`, `repaired` (text या `null`), `value`, `actions` (हर संपादन), `strategies`, `truncated`, `validated`, `placeholders`, `error`।
 - डिस्क पर कुछ नहीं लिखा जाता और इनपुट फ़ाइल कभी नहीं बदलती। चारों टूल R0 (रीड-ओनली) हैं।
 
 ### उदाहरण
@@ -131,7 +131,7 @@ node samples/quickstart/run.mjs
 
 ![dsh-provider-params का असली टेस्ट रन: 24 mapping और repair टेस्ट पास](docs/assets/quickstart.png)
 
-*स्क्रीनशॉट असली `node --test test/params.test.mjs test/repair.test.mjs` आउटपुट से बनाया गया है (24/24 पास); कमांड, तिथि और हैश `screenshots.json` में दर्ज हैं। पूरी सूट में 4 फ़ाइलें और 35 केस हैं।*
+*स्क्रीनशॉट असली `node --test test/params.test.mjs test/repair.test.mjs` आउटपुट से बनाया गया है (24/24 पास); कमांड, तिथि और हैश `screenshots.json` में दर्ज हैं। पूरी सूट में 5 फ़ाइलें और 36 केस हैं।*
 
 ### मैपिंग नियम
 
@@ -152,7 +152,7 @@ node samples/quickstart/run.mjs
 | `truncationClosure` | कटी हुई string और खुले containers बंद करता है | गुम व्यावसायिक डेटा का अनुमान नहीं लगाता |
 | `fieldCompletion` | मौजूद ऑब्जेक्ट के गुम अनिवार्य फ़ील्ड के लिए `null` लिखता है | गुम parent ऑब्जेक्ट नहीं बनाता, मान नहीं गढ़ता |
 
-`json.repair` केवल object/array root स्वीकार करता है; अन्य root `E_JSON_NOT_CONTAINER` लौटाते हैं। schema उपसमुच्चय `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const` है। अन्य keywords `E_JSON_SCHEMA_UNSUPPORTED` के साथ अस्वीकार होते हैं, ताकि "जाँच हुई" का भ्रम न हो। repair के बाद भी schema का उल्लंघन करने वाला मान `E_JSON_SCHEMA_VIOLATION` के साथ विफल होता है, और मूल टूटा text कभी सफलता के रूप में नहीं लौटाया जाता।
+`json_repair` केवल object/array root स्वीकार करता है; अन्य root `E_JSON_NOT_CONTAINER` लौटाते हैं। schema उपसमुच्चय `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const` है। अन्य keywords `E_JSON_SCHEMA_UNSUPPORTED` के साथ अस्वीकार होते हैं, ताकि "जाँच हुई" का भ्रम न हो। repair के बाद भी schema का उल्लंघन करने वाला मान `E_JSON_SCHEMA_VIOLATION` के साथ विफल होता है, और मूल टूटा text कभी सफलता के रूप में नहीं लौटाया जाता।
 
 ## मापा गया डेटा
 
@@ -177,28 +177,28 @@ node samples/quickstart/run.mjs
 
 | Parameter | टूल | डिफ़ॉल्ट | अर्थ |
 |---|---|---|---|
-| `from` | `params.map` / `params.compare` | अनिवार्य | स्रोत विक्रेता id; 11 ids `params.vendors` में देखें |
-| `to` | `params.map` / `params.compare` | अनिवार्य | लक्ष्य विक्रेता id |
-| `params` | `params.map` | अनिवार्य | request अंश; स्रोत wire names या canonical नाम |
-| `strict` | `params.map` | `false` | `true` अज्ञात कुंजियों को `E_PARAMS_UNKNOWN_PARAM` के साथ अस्वीकार करता है |
-| `text` | `json.repair` | अनिवार्य | ठीक करने योग्य JSON text; Markdown fences स्वीकार |
-| `max_steps` | `json.repair` | `8` | text/structure रिपेयर के scan/apply चक्र, 1–64 |
+| `from` | `params_map` / `params_compare` | अनिवार्य | स्रोत विक्रेता id; 11 ids `params_vendors` में देखें |
+| `to` | `params_map` / `params_compare` | अनिवार्य | लक्ष्य विक्रेता id |
+| `params` | `params_map` | अनिवार्य | request अंश; स्रोत wire names या canonical नाम |
+| `strict` | `params_map` | `false` | `true` अज्ञात कुंजियों को `E_PARAMS_UNKNOWN_PARAM` के साथ अस्वीकार करता है |
+| `text` | `json_repair` | अनिवार्य | ठीक करने योग्य JSON text; Markdown fences स्वीकार |
+| `max_steps` | `json_repair` | `8` | text/structure रिपेयर के scan/apply चक्र, 1–64 |
 
 <details>
 <summary>पूर्ण parameter तालिका (10 प्रविष्टियाँ)</summary>
 
 | Parameter | टूल | डिफ़ॉल्ट | अर्थ |
 |---|---|---|---|
-| `from` | `params.map` / `params.compare` | अनिवार्य | स्रोत विक्रेता id |
-| `to` | `params.map` / `params.compare` | अनिवार्य | लक्ष्य विक्रेता id |
-| `params` | `params.map` | अनिवार्य | request अंश |
-| `strict` | `params.map` | `false` | अज्ञात कुंजियाँ विफल हों या नहीं |
-| `vendor` | `params.vendors` | सभी | केवल एक विक्रेता; case-insensitive |
-| `include_unsupported` | `params.vendors` | `false` | बिना समतुल्य वाले फ़ील्ड शामिल करें |
-| `text` | `json.repair` | अनिवार्य | ठीक करने योग्य JSON text |
-| `schema` | `json.repair` | कोई नहीं | समर्थित उपसमुच्चय में schema; पूर्णता और अंतिम जाँच के लिए |
-| `strategies` | `json.repair` | चारों चालू | `escape_repair` / `trailing_comma` / `truncation_closure` / `field_completion` |
-| `max_steps` | `json.repair` | `8` | 1–64 का पूर्णांक |
+| `from` | `params_map` / `params_compare` | अनिवार्य | स्रोत विक्रेता id |
+| `to` | `params_map` / `params_compare` | अनिवार्य | लक्ष्य विक्रेता id |
+| `params` | `params_map` | अनिवार्य | request अंश |
+| `strict` | `params_map` | `false` | अज्ञात कुंजियाँ विफल हों या नहीं |
+| `vendor` | `params_vendors` | सभी | केवल एक विक्रेता; case-insensitive |
+| `include_unsupported` | `params_vendors` | `false` | बिना समतुल्य वाले फ़ील्ड शामिल करें |
+| `text` | `json_repair` | अनिवार्य | ठीक करने योग्य JSON text |
+| `schema` | `json_repair` | कोई नहीं | समर्थित उपसमुच्चय में schema; पूर्णता और अंतिम जाँच के लिए |
+| `strategies` | `json_repair` | चारों चालू | `escape_repair` / `trailing_comma` / `truncation_closure` / `field_completion` |
+| `max_steps` | `json_repair` | `8` | 1–64 का पूर्णांक |
 
 </details>
 
@@ -214,14 +214,14 @@ node samples/quickstart/run.mjs
 <details>
 <summary>मैप किया गया परिणाम अपेक्षा से अलग है।</summary>
 
-पहले `dropped` और `adjusted` देखें: लक्ष्य में समतुल्य नहीं हो सकता, या किसी प्रलेखित सीमा ने मान काट दिया हो सकता है। दोनों wire names और सीमाएँ देखने के लिए `params.compare` चलाएँ। अज्ञात कुंजियाँ `unknown` में आती हैं; वे कभी चुपचाप परिणाम में नहीं घुसतीं।
+पहले `dropped` और `adjusted` देखें: लक्ष्य में समतुल्य नहीं हो सकता, या किसी प्रलेखित सीमा ने मान काट दिया हो सकता है। दोनों wire names और सीमाएँ देखने के लिए `params_compare` चलाएँ। अज्ञात कुंजियाँ `unknown` में आती हैं; वे कभी चुपचाप परिणाम में नहीं घुसतीं।
 
 </details>
 
 <details>
 <summary>क्या यह मेरी फ़ाइलें संसाधित कर सकता है?</summary>
 
-सीधे नहीं। JSON text को `json.repair.text` के रूप में और parameter ऑब्जेक्ट को `params.map.params` के रूप में दें। यह डिस्क नहीं पढ़ता, नेटवर्क नहीं बुलाता और मॉडल नहीं बुलाता।
+सीधे नहीं। JSON text को `json_repair.text` के रूप में और parameter ऑब्जेक्ट को `params_map.params` के रूप में दें। यह डिस्क नहीं पढ़ता, नेटवर्क नहीं बुलाता और मॉडल नहीं बुलाता।
 
 </details>
 
@@ -243,7 +243,7 @@ node samples/quickstart/run.mjs
 
 - **रीड-ओनली, कभी स्थायी नहीं।** चारों टूल कोई फ़ाइल नहीं लिखते और मूल फ़ाइलें नहीं बदलते; आउटपुट केवल टूल परिणाम में रहता है और कॉल के बाद कोई स्थिति नहीं बचती।
 - **कोई नेटवर्क नहीं, कोई मॉडल कॉल नहीं।** स्रोत में कोई HTTP / DNS / WebSocket कॉल या मॉडल-कॉल पथ नहीं है; `dsh.demo.network` `false` है।
-- **कोई गढ़ा हुआ मान नहीं।** `added` लक्ष्य के अनिवार्य पर गुम फ़ील्ड बिना मान के बताता है; `json.repair` की field completion केवल `null` placeholders लिखती है, उनके paths `placeholders` में बताती है और असली मान कॉलर पर छोड़ती है।
+- **कोई गढ़ा हुआ मान नहीं।** `added` लक्ष्य के अनिवार्य पर गुम फ़ील्ड बिना मान के बताता है; `json_repair` की field completion केवल `null` placeholders लिखती है, उनके paths `placeholders` में बताती है और असली मान कॉलर पर छोड़ती है।
 - **सीमाएँ केवल प्रलेखित होने पर काटती हैं।** ERNIE का `temperature` (0.01..1) और Anthropic का `temperature` (0..1) ही स्पष्ट कटौती हैं; दूसरे विक्रेताओं के नोट्स कभी मान नहीं बदलते।
 - **विफलता बंद दिशा में।** असमर्थित schema keywords, schema का उल्लंघन करता मान, अज्ञात strategy नाम और सीमा से बाहर `max_steps` — सब ज़ोर से विफल होते हैं; मूल टूटा text कभी सफलता के रूप में नहीं बताया जाता।
 
@@ -258,7 +258,7 @@ node samples/quickstart/run.mjs
 
 | कोड | अर्थ | अगला कदम |
 |---|---|---|
-| `E_PARAMS_UNKNOWN_VENDOR` | विक्रेता id तालिका में नहीं है | 11 ids देखने के लिए `params.vendors` चलाएँ |
+| `E_PARAMS_UNKNOWN_VENDOR` | विक्रेता id तालिका में नहीं है | 11 ids देखने के लिए `params_vendors` चलाएँ |
 | `E_PARAMS_UNKNOWN_PARAM` | `strict: true` के साथ अज्ञात कुंजी | कुंजी हटाएँ या `strict: false` करें |
 | `E_PARAMS_CONFLICT` | एक ही parameter दो रूपों में अलग-अलग मान के साथ | एक ही रूप रखें |
 | `E_JSON_NOT_CONTAINER` | text का root object या array नहीं है | टूल आउटपुट का `{...}` / `[...]` अंश दें |
@@ -307,13 +307,13 @@ node scripts/gate.mjs
 
 `node scripts/gate.mjs` lint, `tsc --noEmit`, build, acceptance स्क्रिप्ट और सभी टेस्ट चलाता है। Acceptance पंक्तियाँ `ACCEPTANCE.csv` में public/synthetic, `counted=false` के रूप में लिखी जाती हैं।
 
-वर्तमान संस्करण `0.1.0` (`package.json` के अनुसार); सूट में 4 फ़ाइलें और 35 केस हैं। संरचना:
+वर्तमान संस्करण `0.2.0` (`package.json` के अनुसार); सूट में 5 फ़ाइलें और 36 केस हैं। संरचना:
 
 | पथ | सामग्री |
 |---|---|
 | `src/core/` | शुद्ध-फ़ंक्शन कोर: `rosetta` (तालिका), `mapping`, `repair`, `json`, `errors`; Cordis पर निर्भरता नहीं |
 | `src/plugin/` | `index.ts` (apply) और `tools.ts` (चारों टूल परिभाषाएँ) |
-| `test/` | `params` / `repair` / `plugin-smoke` / `samples` की `node --test` सूट |
+| `test/` | `params` / `repair` / `plugin-smoke` / `samples` / `tool-name-wire` की `node --test` सूट |
 | `samples/quickstart/` | सिंथेटिक इनपुट, गोल्डन आउटपुट और `run.mjs` |
 | `scripts/` | `acceptance.mjs`, `gate.mjs`, `lint.mjs`, `gen-readme-assets.py` |
 | `docs/assets/` | README चित्र (light/dark hero SVG, quickstart स्क्रीनशॉट) |

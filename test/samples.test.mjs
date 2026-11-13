@@ -27,8 +27,8 @@ test('quickstart broken JSON sample matches its checked-in golden', () => {
 
 test('quickstart runner prints both real results', () => {
   const output = execFileSync(process.execPath, ['samples/quickstart/run.mjs'], { cwd: root, encoding: 'utf8' })
-  assert.match(output, /== params\.map ==/)
-  assert.match(output, /== json\.repair ==/)
+  assert.match(output, /== params_map ==/)
+  assert.match(output, /== json_repair ==/)
   assert.match(output, /"stop_sequences"/)
   assert.match(output, /"strategies": \[\n\s+"escapeRepair",\n\s+"trailingComma"\n\s+\]/)
 })

@@ -9,12 +9,12 @@ function toolMap() {
 
 test('createTools registers exactly the four stable tool names', () => {
   const names = createTools().map((tool) => tool.name)
-  assert.deepEqual(names, ['params.map', 'params.compare', 'params.vendors', 'json.repair'])
+  assert.deepEqual(names, ['params_map', 'params_compare', 'params_vendors', 'json_repair'])
 })
 
-test('params.map executes and renders the dropped/adjusted summary', async () => {
+test('params_map executes and renders the dropped/adjusted summary', async () => {
   const tools = toolMap()
-  const result = await tools['params.map'].execute(
+  const result = await tools['params_map'].execute(
     { from: 'openai', to: 'anthropic', params: { temperature: 1.4, stop: ['END'], n: 2 } },
     {},
   )
@@ -25,45 +25,45 @@ test('params.map executes and renders the dropped/adjusted summary', async () =>
   assert.deepEqual(result.dropped.map((entry) => entry.param), ['n'])
   assert.deepEqual(result.added.map((entry) => entry.param), ['max_tokens'])
 
-  const rendered = tools['params.map'].output.render({}, result)
+  const rendered = tools['params_map'].output.render({}, result)
   assert.equal(rendered[0].type, 'text')
   assert.match(rendered[0].text, /openai -> anthropic/)
   assert.match(rendered[0].text, /dropped=1/)
   assert.match(rendered[0].text, /adjusted=1/)
 })
 
-test('params.compare and params.vendors execute through the registry shape', async () => {
+test('params_compare and params_vendors execute through the registry shape', async () => {
   const tools = toolMap()
-  const compared = await tools['params.compare'].execute({ from: 'openai', to: 'ernie' }, {})
+  const compared = await tools['params_compare'].execute({ from: 'openai', to: 'ernie' }, {})
   assert.equal(compared.rows.length, 13)
   assert.equal(compared.summary.renamed >= 1, true)
-  assert.match(tools['params.compare'].output.render({}, compared)[0].text, /params.compare openai -> ernie/)
+  assert.match(tools['params_compare'].output.render({}, compared)[0].text, /params_compare openai -> ernie/)
 
-  const listed = await tools['params.vendors'].execute({ vendor: 'cohere' }, {})
+  const listed = await tools['params_vendors'].execute({ vendor: 'cohere' }, {})
   assert.equal(listed.count, 1)
   assert.equal(listed.vendors[0].supported, 13)
-  assert.match(tools['params.vendors'].output.render({}, listed)[0].text, /params.vendors: 1\/11 vendors/)
+  assert.match(tools['params_vendors'].output.render({}, listed)[0].text, /params_vendors: 1\/11 vendors/)
 })
 
-test('json.repair maps snake_case strategy switches and stays deterministic', async () => {
+test('json_repair maps snake_case strategy switches and stays deterministic', async () => {
   const tools = toolMap()
-  const disabled = await tools['json.repair'].execute(
+  const disabled = await tools['json_repair'].execute(
     { text: '{"note":"line1\nline2"}', strategies: { escape_repair: false } },
     {},
   )
   assert.equal(disabled.ok, false)
   assert.equal(disabled.error.code, 'E_JSON_UNREPAIRABLE')
 
-  const repaired = await tools['json.repair'].execute({ text: '{"note":"line1\nline2"}' }, {})
+  const repaired = await tools['json_repair'].execute({ text: '{"note":"line1\nline2"}' }, {})
   assert.equal(repaired.ok, true)
   assert.equal(repaired.value.note, 'line1\nline2')
   assert.deepEqual(repaired.strategies, ['escapeRepair'])
-  assert.match(tools['json.repair'].output.render({}, repaired)[0].text, /actions=1/)
+  assert.match(tools['json_repair'].output.render({}, repaired)[0].text, /actions=1/)
 })
 
-test('json.repair completes required fields through the tool surface', async () => {
+test('json_repair completes required fields through the tool surface', async () => {
   const tools = toolMap()
-  const result = await tools['json.repair'].execute(
+  const result = await tools['json_repair'].execute(
     {
       text: '{"a":"x"}',
       schema: {
@@ -82,5 +82,5 @@ test('json.repair completes required fields through the tool surface', async () 
 test('the plugin apply registers all four tools on the tools service', async () => {
   const registered = []
   await apply({ tools: { register: (tool) => registered.push(tool.name) } })
-  assert.deepEqual(registered, ['params.map', 'params.compare', 'params.vendors', 'json.repair'])
+  assert.deepEqual(registered, ['params_map', 'params_compare', 'params_vendors', 'json_repair'])
 })

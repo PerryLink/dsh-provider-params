@@ -9,7 +9,7 @@
 
 **Mapeie parâmetros de requisição entre 11 provedores de LLM e repare JSON quebrado com regras fixas — cada passo deixa um registro auditável.**
 
-Um kit de ferramentas somente leitura para o DeepSeek Harness: `params.map` / `params.compare` / `params.vendors` tratam de `temperature`, `top_p`, `max_tokens`, `stop`, `system` e campos relacionados, enquanto `json.repair` trata de vírgulas finais, quebras de linha cruas e truncamento. Sem rede, sem gravação de arquivos, sem chamadas a modelo.
+Um kit de ferramentas somente leitura para o DeepSeek Harness: `params_map` / `params_compare` / `params_vendors` tratam de `temperature`, `top_p`, `max_tokens`, `stop`, `system` e campos relacionados, enquanto `json_repair` trata de vírgulas finais, quebras de linha cruas e truncamento. Sem rede, sem gravação de arquivos, sem chamadas a modelo.
 
 [Instalar](#instalação-em-três-passos) · [Configuração](#configuração) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
@@ -32,14 +32,14 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 ## O que é
 
-O `dsh-provider-params` mantém uma tabela de parâmetros de 11 provedores × 13 campos canônicos, traduz um fragmento de requisição dos wire names do provedor de origem para os do provedor de destino e relata o que aconteceu item por item: `mapped` é o resultado, `dropped` significa que o destino não tem equivalente, `added` que o destino exige mas a entrada não forneceu, `adjusted` que um intervalo documentado o recortou e `unknown` que a chave não foi reconhecida. O `params.compare` devolve um diff semântico de 13 linhas entre dois provedores, e o `params.vendors` lista o catálogo de campos. O `json.repair` repara JSON quebrado com uma sequência fixa de estratégias de texto/estrutura e devolve cada edição. As quatro ferramentas são cálculo puro em memória: sem rede, sem gravação de arquivos e sem chamadas a modelo.
+O `dsh-provider-params` mantém uma tabela de parâmetros de 11 provedores × 13 campos canônicos, traduz um fragmento de requisição dos wire names do provedor de origem para os do provedor de destino e relata o que aconteceu item por item: `mapped` é o resultado, `dropped` significa que o destino não tem equivalente, `added` que o destino exige mas a entrada não forneceu, `adjusted` que um intervalo documentado o recortou e `unknown` que a chave não foi reconhecida. O `params_compare` devolve um diff semântico de 13 linhas entre dois provedores, e o `params_vendors` lista o catálogo de campos. O `json_repair` repara JSON quebrado com uma sequência fixa de estratégias de texto/estrutura e devolve cada edição. As quatro ferramentas são cálculo puro em memória: sem rede, sem gravação de arquivos e sem chamadas a modelo.
 
 - **Adequado para**: mover `temperature`, `top_p`, `max_tokens`, `stop`, `system` e campos relacionados entre OpenAI, Claude, Gemini, ERNIE, Qwen, DeepSeek, Mistral, Cohere, xAI, Groq e Azure OpenAI; auditar se um parâmetro foi renomeado, descartado, recortado para um intervalo documentado ou é obrigatório no destino mas falta na origem; reparar a saída de uma ferramenta que traz quebras de linha cruas, vírgulas finais ou uma string/contêiner truncado antes de analisá-la.
 - **Não adequado para**: adivinhar dados de negócio ausentes ou chamar a API de um provedor — este pacote nunca inventa um valor e não tem caminho de rede; substituir um SDK de provedor, autenticação, streaming ou a construção completa da requisição — ele trabalha apenas sobre um fragmento de parâmetros e texto.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="Estrutura do dsh-provider-params: painel A, os três portões de params.map (reconhecida? o destino aceita? fora do intervalo documentado?) com saídas laterais para unknown / dropped / adjusted, as sobreviventes vão para mapped e a lacuna obrigatória do destino vira added sem valor; painel B, o laço limitado de json.repair: trim e extração de cerca, parse, até max_steps passadas de estratégias (escapeRepair / trailingComma / truncationClosure) antes de repetir o parse, depois fieldCompletion grava null e o subconjunto de schema é validado, terminando em ok ou num E_JSON_* de falha fechada">
+  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="Estrutura do dsh-provider-params: painel A, os três portões de params_map (reconhecida? o destino aceita? fora do intervalo documentado?) com saídas laterais para unknown / dropped / adjusted, as sobreviventes vão para mapped e a lacuna obrigatória do destino vira added sem valor; painel B, o laço limitado de json_repair: trim e extração de cerca, parse, até max_steps passadas de estratégias (escapeRepair / trailingComma / truncationClosure) antes de repetir o parse, depois fieldCompletion grava null e o subconjunto de schema é validado, terminando em ok ou num E_JSON_* de falha fechada">
 </picture>
 
 ## Instalação em três passos
@@ -72,7 +72,7 @@ O `dsh-provider-params` mantém uma tabela de parâmetros de 11 provedores × 13
    node samples/quickstart/run.mjs
    ```
 
-   A amostra imprime em ordem os resultados reais `== params.map ==` e `== json.repair ==`. Dentro de uma sessão também basta pedir:
+   A amostra imprime em ordem os resultados reais `== params_map ==` e `== json_repair ==`. Dentro de uma sessão também basta pedir:
 
    ```text
    Use as amostras incluídas para converter meu temperature/top_p/max_tokens/stop da OpenAI em parâmetros da Anthropic e depois reparar meu JSON quebrado que tem uma quebra de linha crua.
@@ -82,10 +82,10 @@ O `dsh-provider-params` mantém uma tabela de parâmetros de 11 provedores × 13
 
 ## Recursos principais
 
-- **Mapeamento entre provedores** — o `params.map` recebe `from`, `to` e um objeto `params`; os campos podem usar wire names da origem ou nomes canônicos, e o `generationConfig` do Google aceita forma aninhada ou com pontos. Devolve `mapped` / `dropped` / `added` / `adjusted` / `unknown`, e `strict: true` rejeita chaves desconhecidas.
-- **Auditoria de diferenças semânticas** — o `params.compare` classifica cada campo como `same / renamed / removed / added / absent` em 13 linhas, com wire names, obrigatoriedade, intervalos documentados e notas dos dois lados.
-- **Catálogo de campos por provedor** — o `params.vendors` lista 11 provedores e seus 13 campos com nome, suporte, obrigatoriedade, intervalo e notas; filtro opcional `vendor` e `include_unsupported`.
-- **Reparação determinística de JSON** — o `json.repair` executa `escapeRepair`, `trailingComma`, `truncationClosure` e `fieldCompletion` em ordem fixa por no máximo 1–64 passos; `actions` registra cada edição e nenhum valor de negócio é inventado.
+- **Mapeamento entre provedores** — o `params_map` recebe `from`, `to` e um objeto `params`; os campos podem usar wire names da origem ou nomes canônicos, e o `generationConfig` do Google aceita forma aninhada ou com pontos. Devolve `mapped` / `dropped` / `added` / `adjusted` / `unknown`, e `strict: true` rejeita chaves desconhecidas.
+- **Auditoria de diferenças semânticas** — o `params_compare` classifica cada campo como `same / renamed / removed / added / absent` em 13 linhas, com wire names, obrigatoriedade, intervalos documentados e notas dos dois lados.
+- **Catálogo de campos por provedor** — o `params_vendors` lista 11 provedores e seus 13 campos com nome, suporte, obrigatoriedade, intervalo e notas; filtro opcional `vendor` e `include_unsupported`.
+- **Reparação determinística de JSON** — o `json_repair` executa `escapeRepair`, `trailingComma`, `truncationClosure` e `fieldCompletion` em ordem fixa por no máximo 1–64 passos; `actions` registra cada edição e nenhum valor de negócio é inventado.
 - **Somente leitura e auditável** — as quatro ferramentas são R0: sem gravação de arquivos, sem alterar originais, sem rede e sem chamadas a modelo; a saída existe apenas no resultado da ferramenta.
 
 ### Superfície de ferramentas
@@ -94,28 +94,28 @@ Os nomes das ferramentas são uma API estável; as quatro são somente leitura, 
 
 | Ferramenta | Propósito | Risco |
 |---|---|---|
-| `params.map` | Mapear um fragmento de requisição do provedor de origem para o de destino e relatar mapped/dropped/added/adjusted/unknown | R0 |
-| `params.compare` | Comparação semântica de parâmetros em 13 linhas entre dois provedores | R0 |
-| `params.vendors` | Listar 11 provedores e seus campos | R0 |
-| `json.repair` | Reparar JSON quebrado de forma determinística e devolver a lista de ações e marcadores | R0 |
+| `params_map` | Mapear um fragmento de requisição do provedor de origem para o de destino e relatar mapped/dropped/added/adjusted/unknown | R0 |
+| `params_compare` | Comparação semântica de parâmetros em 13 linhas entre dois provedores | R0 |
+| `params_vendors` | Listar 11 provedores e seus campos | R0 |
+| `json_repair` | Reparar JSON quebrado de forma determinística e devolver a lista de ações e marcadores | R0 |
 
 ### Entrada e saída
 
 **Entrada**
 
-- `params.map`: `from`, `to` e um objeto JSON `params`. Os campos podem usar wire names da origem ou nomes canônicos; o `generationConfig` do Google pode ser aninhado ou com pontos. `strict: true` opcional rejeita chaves desconhecidas.
-- `params.compare`: dois ids de provedor.
-- `params.vendors`: filtro opcional `vendor` e `include_unsupported`.
-- `json.repair`: `text` (UTF-8, aceita cercas Markdown), `schema` opcional (subconjunto: `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`), quatro interruptores de estratégia opcionais e `max_steps` opcional de 1–64.
+- `params_map`: `from`, `to` e um objeto JSON `params`. Os campos podem usar wire names da origem ou nomes canônicos; o `generationConfig` do Google pode ser aninhado ou com pontos. `strict: true` opcional rejeita chaves desconhecidas.
+- `params_compare`: dois ids de provedor.
+- `params_vendors`: filtro opcional `vendor` e `include_unsupported`.
+- `json_repair`: `text` (UTF-8, aceita cercas Markdown), `schema` opcional (subconjunto: `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`), quatro interruptores de estratégia opcionais e `max_steps` opcional de 1–64.
 - Escala: o texto é varrido em memória e limitado pelo limite de argumentos por chamada do host; o pacote não lê arquivos.
 - Amostras incluídas: `samples/quickstart/input/params-request.json` e `samples/quickstart/input/broken-tool-output.json`.
 
 **Saída**
 
-- `params.map`: o objeto wire do destino (`mapped`) mais `dropped` (sem equivalente), `added` (obrigatório no destino mas ausente na entrada, **sem valor**), `adjusted` (recortado para um intervalo documentado) e `unknown` (chaves não reconhecidas).
-- `params.compare`: 13 linhas semânticas classificadas `same / renamed / removed / added / absent`, com ambos os wire names, obrigatoriedade, intervalos documentados e notas.
-- `params.vendors`: provedores suportados e seus campos (nome, suporte, obrigatoriedade, intervalo, notas).
-- `json.repair`: `ok`, `repaired` (texto ou `null`), `value`, `actions` (cada edição), `strategies`, `truncated`, `validated`, `placeholders`, `error`.
+- `params_map`: o objeto wire do destino (`mapped`) mais `dropped` (sem equivalente), `added` (obrigatório no destino mas ausente na entrada, **sem valor**), `adjusted` (recortado para um intervalo documentado) e `unknown` (chaves não reconhecidas).
+- `params_compare`: 13 linhas semânticas classificadas `same / renamed / removed / added / absent`, com ambos os wire names, obrigatoriedade, intervalos documentados e notas.
+- `params_vendors`: provedores suportados e seus campos (nome, suporte, obrigatoriedade, intervalo, notas).
+- `json_repair`: `ok`, `repaired` (texto ou `null`), `value`, `actions` (cada edição), `strategies`, `truncated`, `validated`, `placeholders`, `error`.
 - Nada é gravado em disco e o arquivo de entrada nunca é modificado. As quatro ferramentas são R0 (somente leitura).
 
 ### Exemplos
@@ -131,7 +131,7 @@ node samples/quickstart/run.mjs
 
 ![Execução real dos testes do dsh-provider-params: 24 testes de mapeamento e reparação aprovados](docs/assets/quickstart.png)
 
-*A captura é renderizada a partir da saída real de `node --test test/params.test.mjs test/repair.test.mjs` (24/24 aprovados); o comando, a data e o hash estão registrados em `screenshots.json`. A suíte completa tem 4 arquivos e 35 casos.*
+*A captura é renderizada a partir da saída real de `node --test test/params.test.mjs test/repair.test.mjs` (24/24 aprovados); o comando, a data e o hash estão registrados em `screenshots.json`. A suíte completa tem 5 arquivos e 36 casos.*
 
 ### Regras de mapeamento
 
@@ -152,7 +152,7 @@ O pipeline é fixo e nunca chama um modelo:
 | `truncationClosure` | Fecha uma string truncada e contêineres abertos | Adivinhar dados de negócio ausentes |
 | `fieldCompletion` | Escreve `null` para um campo obrigatório ausente em um objeto existente | Criar um objeto pai ausente ou inventar um valor |
 
-O `json.repair` aceita apenas raízes objeto/array; outras raízes devolvem `E_JSON_NOT_CONTAINER`. O subconjunto de schema é `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`. Outras palavras-chave são rejeitadas com `E_JSON_SCHEMA_UNSUPPORTED` em vez de não validar nada. Um valor que ainda viola o schema falha de forma fechada com `E_JSON_SCHEMA_VIOLATION`, e o texto quebrado original nunca é reportado como sucesso.
+O `json_repair` aceita apenas raízes objeto/array; outras raízes devolvem `E_JSON_NOT_CONTAINER`. O subconjunto de schema é `type`, `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`. Outras palavras-chave são rejeitadas com `E_JSON_SCHEMA_UNSUPPORTED` em vez de não validar nada. Um valor que ainda viola o schema falha de forma fechada com `E_JSON_SCHEMA_VIOLATION`, e o texto quebrado original nunca é reportado como sucesso.
 
 ## Dados medidos
 
@@ -177,28 +177,28 @@ Parâmetros mais usados:
 
 | Parâmetro | Ferramenta | Padrão | Significado |
 |---|---|---|---|
-| `from` | `params.map` / `params.compare` | obrigatório | Id do provedor de origem; veja os 11 ids em `params.vendors` |
-| `to` | `params.map` / `params.compare` | obrigatório | Id do provedor de destino |
-| `params` | `params.map` | obrigatório | Fragmento de requisição; wire names da origem ou nomes canônicos |
-| `strict` | `params.map` | `false` | `true` rejeita chaves desconhecidas com `E_PARAMS_UNKNOWN_PARAM` |
-| `text` | `json.repair` | obrigatório | Texto JSON a reparar; cercas Markdown aceitas |
-| `max_steps` | `json.repair` | `8` | Passes de varredura/aplicação para reparo de texto/estrutura, 1–64 |
+| `from` | `params_map` / `params_compare` | obrigatório | Id do provedor de origem; veja os 11 ids em `params_vendors` |
+| `to` | `params_map` / `params_compare` | obrigatório | Id do provedor de destino |
+| `params` | `params_map` | obrigatório | Fragmento de requisição; wire names da origem ou nomes canônicos |
+| `strict` | `params_map` | `false` | `true` rejeita chaves desconhecidas com `E_PARAMS_UNKNOWN_PARAM` |
+| `text` | `json_repair` | obrigatório | Texto JSON a reparar; cercas Markdown aceitas |
+| `max_steps` | `json_repair` | `8` | Passes de varredura/aplicação para reparo de texto/estrutura, 1–64 |
 
 <details>
 <summary>Tabela completa de parâmetros (10 entradas)</summary>
 
 | Parâmetro | Ferramenta | Padrão | Significado |
 |---|---|---|---|
-| `from` | `params.map` / `params.compare` | obrigatório | Id do provedor de origem |
-| `to` | `params.map` / `params.compare` | obrigatório | Id do provedor de destino |
-| `params` | `params.map` | obrigatório | Fragmento de requisição |
-| `strict` | `params.map` | `false` | Se chaves desconhecidas falham |
-| `vendor` | `params.vendors` | todos | Listar apenas um provedor; sem diferenciar maiúsculas |
-| `include_unsupported` | `params.vendors` | `false` | Incluir campos sem equivalente |
-| `text` | `json.repair` | obrigatório | Texto JSON a reparar |
-| `schema` | `json.repair` | nenhum | Schema no subconjunto suportado, usado para completar e validar no final |
-| `strategies` | `json.repair` | as quatro ligadas | `escape_repair` / `trailing_comma` / `truncation_closure` / `field_completion` |
-| `max_steps` | `json.repair` | `8` | Inteiro de 1–64 |
+| `from` | `params_map` / `params_compare` | obrigatório | Id do provedor de origem |
+| `to` | `params_map` / `params_compare` | obrigatório | Id do provedor de destino |
+| `params` | `params_map` | obrigatório | Fragmento de requisição |
+| `strict` | `params_map` | `false` | Se chaves desconhecidas falham |
+| `vendor` | `params_vendors` | todos | Listar apenas um provedor; sem diferenciar maiúsculas |
+| `include_unsupported` | `params_vendors` | `false` | Incluir campos sem equivalente |
+| `text` | `json_repair` | obrigatório | Texto JSON a reparar |
+| `schema` | `json_repair` | nenhum | Schema no subconjunto suportado, usado para completar e validar no final |
+| `strategies` | `json_repair` | as quatro ligadas | `escape_repair` / `trailing_comma` / `truncation_closure` / `field_completion` |
+| `max_steps` | `json_repair` | `8` | Inteiro de 1–64 |
 
 </details>
 
@@ -214,14 +214,14 @@ Confirme que o perfil carregou este pacote: `dsh --profile <profile> --dump-conf
 <details>
 <summary>O resultado mapeado não é o esperado.</summary>
 
-Inspecione primeiro `dropped` e `adjusted`: o destino pode não ter equivalente, ou um intervalo documentado pode ter recortado o valor. Use `params.compare` para ver os dois wire names e os intervalos. Chaves desconhecidas aparecem em `unknown`; elas nunca entram no resultado em silêncio.
+Inspecione primeiro `dropped` e `adjusted`: o destino pode não ter equivalente, ou um intervalo documentado pode ter recortado o valor. Use `params_compare` para ver os dois wire names e os intervalos. Chaves desconhecidas aparecem em `unknown`; elas nunca entram no resultado em silêncio.
 
 </details>
 
 <details>
 <summary>Ele consegue processar meus arquivos?</summary>
 
-Não diretamente. Passe o texto JSON como `json.repair.text` e o objeto de parâmetros como `params.map.params`. Ele não lê disco, não chama a rede e não chama um modelo.
+Não diretamente. Passe o texto JSON como `json_repair.text` e o objeto de parâmetros como `params_map.params`. Ele não lê disco, não chama a rede e não chama um modelo.
 
 </details>
 
@@ -243,7 +243,7 @@ Este pacote reescreve o mapeamento de parâmetros por provedor e a reparação d
 
 - **Somente leitura, nunca persistido.** As quatro ferramentas não gravam arquivos nem modificam originais; a saída existe apenas no resultado da ferramenta e nenhum estado sobrevive à chamada.
 - **Sem rede, sem chamadas a modelo.** O código não contém chamadas HTTP / DNS / WebSocket nem um caminho de chamada a modelo; `dsh.demo.network` é `false`.
-- **Sem valores inventados.** `added` relata campos obrigatórios do destino que faltam, sem valores; o preenchimento do `json.repair` escreve apenas marcadores `null`, relata seus caminhos em `placeholders` e deixa os valores reais para o chamador.
+- **Sem valores inventados.** `added` relata campos obrigatórios do destino que faltam, sem valores; o preenchimento do `json_repair` escreve apenas marcadores `null`, relata seus caminhos em `placeholders` e deixa os valores reais para o chamador.
 - **Intervalos recortam apenas onde documentado.** O `temperature` da ERNIE (0.01..1) e o da Anthropic (0..1) são os únicos recortes explícitos; notas de outros provedores nunca reescrevem um valor.
 - **Falha fechada.** Palavras-chave de schema não suportadas, um valor que ainda viola o schema, nomes de estratégia desconhecidos e um `max_steps` fora do intervalo falham em voz alta; o texto quebrado original nunca é reportado como sucesso.
 
@@ -258,7 +258,7 @@ Este pacote reescreve o mapeamento de parâmetros por provedor e a reparação d
 
 | Código | Significado | Próximo passo |
 |---|---|---|
-| `E_PARAMS_UNKNOWN_VENDOR` | O id de provedor não está na tabela | Use `params.vendors` para ver os 11 ids |
+| `E_PARAMS_UNKNOWN_VENDOR` | O id de provedor não está na tabela | Use `params_vendors` para ver os 11 ids |
 | `E_PARAMS_UNKNOWN_PARAM` | Chave desconhecida com `strict: true` | Remova a chave ou use `strict: false` |
 | `E_PARAMS_CONFLICT` | Um parâmetro fornecido duas vezes com valores diferentes | Mantenha uma única grafia |
 | `E_JSON_NOT_CONTAINER` | A raiz do texto não é objeto nem array | Passe o fragmento `{...}` / `[...]` da saída da ferramenta |
@@ -307,13 +307,13 @@ node scripts/gate.mjs
 
 O `node scripts/gate.mjs` executa lint, `tsc --noEmit`, a compilação, o script de aceitação e todos os testes. As linhas de aceitação são gravadas em `ACCEPTANCE.csv` como public/synthetic, `counted=false`.
 
-Versão atual `0.1.0` (igual ao `package.json`); a suíte tem 4 arquivos e 35 casos. Estrutura:
+Versão atual `0.2.0` (igual ao `package.json`); a suíte tem 5 arquivos e 36 casos. Estrutura:
 
 | Caminho | Conteúdo |
 |---|---|
 | `src/core/` | Núcleo de funções puras: `rosetta` (tabela), `mapping`, `repair`, `json`, `errors`; sem dependência de Cordis |
 | `src/plugin/` | `index.ts` (apply) e `tools.ts` (as quatro definições de ferramenta) |
-| `test/` | Suítes `node --test` de `params` / `repair` / `plugin-smoke` / `samples` |
+| `test/` | Suítes `node --test` de `params` / `repair` / `plugin-smoke` / `samples` / `tool-name-wire` |
 | `samples/quickstart/` | Entradas sintéticas, saídas gabarito e `run.mjs` |
 | `scripts/` | `acceptance.mjs`, `gate.mjs`, `lint.mjs`, `gen-readme-assets.py` |
 | `docs/assets/` | Imagens do README (hero SVG claro/escuro, captura do quickstart) |

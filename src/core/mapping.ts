@@ -1,7 +1,7 @@
 /**
  * Pure mapping between vendor request shapes.
  *
- * `params.map` accepts a request fragment written in the source vendor's wire
+ * `params_map` accepts a request fragment written in the source vendor's wire
  * names (or in canonical names, which are vendor-neutral) and returns the
  * target vendor's fragment together with an explicit account of every value
  * that was renamed, dropped, clamped, or left for the caller to supply.
@@ -61,7 +61,7 @@ export interface UnknownParam {
   reason: string
 }
 
-/** Result of one `params.map` call. */
+/** Result of one `params_map` call. */
 export interface MapParamsResult {
   from: string
   to: string
@@ -97,7 +97,7 @@ export interface CompareRow {
   notes: string
 }
 
-/** Result of one `params.compare` call. */
+/** Result of one `params_compare` call. */
 export interface CompareResult {
   from: string
   to: string
@@ -132,7 +132,7 @@ export interface VendorInfo {
   fields: VendorField[]
 }
 
-/** Result of one `params.vendors` call. */
+/** Result of one `params_vendors` call. */
 export interface VendorsResult {
   count: number
   params: string[]

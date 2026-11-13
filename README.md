@@ -9,7 +9,7 @@
 
 **把 11 家模型厂商的请求参数互相映射，再把坏掉的 JSON 按固定规则修好——每一步都留下可审计的记录。**
 
-面向 DeepSeek Harness 的只读工具包：`params.map` / `params.compare` / `params.vendors` 处理 `temperature`、`top_p`、`max_tokens`、`stop`、`system` 等字段，`json.repair` 处理尾逗号、裸换行与截断；不联网、不写文件、不调用模型。
+面向 DeepSeek Harness 的只读工具包：`params_map` / `params_compare` / `params_vendors` 处理 `temperature`、`top_p`、`max_tokens`、`stop`、`system` 等字段，`json_repair` 处理尾逗号、裸换行与截断；不联网、不写文件、不调用模型。
 
 [安装](#三步上手) · [配置](#配置) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
@@ -32,14 +32,14 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 ## 它是什么
 
-`dsh-provider-params` 维护一张 11 家厂商 × 13 个 canonical 字段的参数表，把一段请求参数从源厂商的 wire name 翻译成目标厂商的 wire name，并逐项报告发生了什么：`mapped` 是结果，`dropped` 是目标没有等价字段，`added` 是目标必填但输入没给，`adjusted` 是被文档范围夹住，`unknown` 是认不出的键。`params.compare` 给出两家厂商的 13 行语义差异，`params.vendors` 列出字段目录。`json.repair` 用固定顺序的文本/结构策略修好坏 JSON，返回每一次编辑。四个工具都是纯内存计算，不联网、不写文件、不调用模型。
+`dsh-provider-params` 维护一张 11 家厂商 × 13 个 canonical 字段的参数表，把一段请求参数从源厂商的 wire name 翻译成目标厂商的 wire name，并逐项报告发生了什么：`mapped` 是结果，`dropped` 是目标没有等价字段，`added` 是目标必填但输入没给，`adjusted` 是被文档范围夹住，`unknown` 是认不出的键。`params_compare` 给出两家厂商的 13 行语义差异，`params_vendors` 列出字段目录。`json_repair` 用固定顺序的文本/结构策略修好坏 JSON，返回每一次编辑。四个工具都是纯内存计算，不联网、不写文件、不调用模型。
 
 - **适合**：在 OpenAI、Claude、Gemini、ERNIE、Qwen、DeepSeek、Mistral、Cohere、xAI、Groq、Azure OpenAI 之间迁移 `temperature`、`top_p`、`max_tokens`、`stop`、`system` 等请求字段；审计某个参数到底是被改名、丢弃、夹到范围内，还是目标必填但源请求没给；工具输出带尾逗号、未转义换行或被截断，需要先确定性修好再解析。
 - **不适合**：让模型“猜”缺失的业务字段，或调用厂商 API——本包不联网、不调用模型，也不会编造值；替代厂商 SDK、鉴权、流式调用或完整的请求构造——它只处理参数片段和文本。
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dsh-provider-params-flow-v5-dark.svg">
-  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params 结构图：左栏 params.map 的三道判定门（认得该键？目标厂商有等价？超出文档范围？），否/是经侧向出口进入 unknown / dropped / adjusted，存活字段进入 mapped，目标必填而输入缺失的进入 added 且不带值；右栏 json.repair 的有界回环：trim 与围栏提取、parse，失败时最多 max_steps 轮策略（escapeRepair / trailingComma / truncationClosure）后重试 parse，再由 fieldCompletion 写 null 占位并做 schema 子集校验，最终 ok 或失败关闭的 E_JSON_*">
+  <img src="docs/assets/dsh-provider-params-flow-v5-light.svg" width="100%" alt="dsh-provider-params 结构图：左栏 params_map 的三道判定门（认得该键？目标厂商有等价？超出文档范围？），否/是经侧向出口进入 unknown / dropped / adjusted，存活字段进入 mapped，目标必填而输入缺失的进入 added 且不带值；右栏 json_repair 的有界回环：trim 与围栏提取、parse，失败时最多 max_steps 轮策略（escapeRepair / trailingComma / truncationClosure）后重试 parse，再由 fieldCompletion 写 null 占位并做 schema 子集校验，最终 ok 或失败关闭的 E_JSON_*">
 </picture>
 
 ## 三步上手
@@ -72,7 +72,7 @@ dsh plugin --profile <profile> add dsh-provider-params
    node samples/quickstart/run.mjs
    ```
 
-   样例会依次打印 `== params.map ==` 与 `== json.repair ==` 的真实结果。在会话里也可以直接说：
+   样例会依次打印 `== params_map ==` 与 `== json_repair ==` 的真实结果。在会话里也可以直接说：
 
    > 用自带样例把我这段 OpenAI 的 temperature/top_p/max_tokens/stop 转成 Anthropic 参数，再把我那段带换行的坏 JSON 修好
 
@@ -80,10 +80,10 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 ## 核心能力
 
-- **跨厂商参数映射** —— `params.map` 接收 `from`、`to` 与一段 `params`，字段可以用源厂商 wire name，也可以直接用 canonical 名；Google 的 `generationConfig` 支持嵌套与点号两种写法。结果同时给出 `mapped` / `dropped` / `added` / `adjusted` / `unknown`，`strict: true` 时未知键直接报错。
-- **语义差异审计** —— `params.compare` 对两家厂商逐字段给出 `same / renamed / removed / added / absent`，共 13 行，附带两端的 wire name、是否必填、文档范围与备注。
-- **厂商字段目录** —— `params.vendors` 列出 11 家厂商及其 13 个字段的名称、支持标记、必填标记、范围与备注；可选 `vendor` 过滤与 `include_unsupported`。
-- **确定性 JSON 修复** —— `json.repair` 按固定顺序执行 `escapeRepair`、`trailingComma`、`truncationClosure`、`fieldCompletion`，最多 1–64 步；返回 `actions` 里每一次编辑，绝不编造业务值。
+- **跨厂商参数映射** —— `params_map` 接收 `from`、`to` 与一段 `params`，字段可以用源厂商 wire name，也可以直接用 canonical 名；Google 的 `generationConfig` 支持嵌套与点号两种写法。结果同时给出 `mapped` / `dropped` / `added` / `adjusted` / `unknown`，`strict: true` 时未知键直接报错。
+- **语义差异审计** —— `params_compare` 对两家厂商逐字段给出 `same / renamed / removed / added / absent`，共 13 行，附带两端的 wire name、是否必填、文档范围与备注。
+- **厂商字段目录** —— `params_vendors` 列出 11 家厂商及其 13 个字段的名称、支持标记、必填标记、范围与备注；可选 `vendor` 过滤与 `include_unsupported`。
+- **确定性 JSON 修复** —— `json_repair` 按固定顺序执行 `escapeRepair`、`trailingComma`、`truncationClosure`、`fieldCompletion`，最多 1–64 步；返回 `actions` 里每一次编辑，绝不编造业务值。
 - **只读与可审计** —— 四个工具全部是 R0：不写文件、不改原文件、不联网、不调用模型；输出只落在工具结果里。
 
 ### 工具面
@@ -92,28 +92,28 @@ dsh plugin --profile <profile> add dsh-provider-params
 
 | 工具 | 用途 | 风险 |
 |---|---|---|
-| `params.map` | 把源厂商请求片段映射到目标厂商，返回 mapped/dropped/added/adjusted/unknown | R0 |
-| `params.compare` | 两个厂商的 13 行参数语义差异表 | R0 |
-| `params.vendors` | 列出 11 家厂商及其字段 | R0 |
-| `json.repair` | 确定性修复坏 JSON，返回动作列表与占位符 | R0 |
+| `params_map` | 把源厂商请求片段映射到目标厂商，返回 mapped/dropped/added/adjusted/unknown | R0 |
+| `params_compare` | 两个厂商的 13 行参数语义差异表 | R0 |
+| `params_vendors` | 列出 11 家厂商及其字段 | R0 |
+| `json_repair` | 确定性修复坏 JSON，返回动作列表与占位符 | R0 |
 
 ### 输入与输出
 
 **输入**
 
-- `params.map`：`from`、`to` 与 JSON 对象 `params`；字段可用源厂商 wire name 或 canonical 名，Google 的 `generationConfig` 可嵌套也可点号；可选 `strict: true` 让未知键直接报错。
-- `params.compare`：`from`、`to` 两个厂商 id。
-- `params.vendors`：可选 `vendor` 过滤，可选 `include_unsupported: true` 显示无等价字段。
-- `json.repair`：`text`（UTF-8 字符串，可带 Markdown 代码围栏）；可选 `schema`（仅支持 `type`、`properties`、`required`、`additionalProperties`、`items`、`enum`、`const`）；可选 `strategies` 四个开关；可选 `max_steps`（1–64）。
+- `params_map`：`from`、`to` 与 JSON 对象 `params`；字段可用源厂商 wire name 或 canonical 名，Google 的 `generationConfig` 可嵌套也可点号；可选 `strict: true` 让未知键直接报错。
+- `params_compare`：`from`、`to` 两个厂商 id。
+- `params_vendors`：可选 `vendor` 过滤，可选 `include_unsupported: true` 显示无等价字段。
+- `json_repair`：`text`（UTF-8 字符串，可带 Markdown 代码围栏）；可选 `schema`（仅支持 `type`、`properties`、`required`、`additionalProperties`、`items`、`enum`、`const`）；可选 `strategies` 四个开关；可选 `max_steps`（1–64）。
 - 规模：文本在内存中扫描，受宿主单次工具调用的参数上限约束；本包不读取任何文件。
 - 自带样例：`samples/quickstart/input/params-request.json` 与 `samples/quickstart/input/broken-tool-output.json`。
 
 **输出**
 
-- `params.map`：目标厂商的 wire 形状（`mapped`），以及 `dropped`（目标无等价）、`added`（目标必填但输入未给，**不含值**）、`adjusted`（被文档化范围夹住）、`unknown`（无法识别的键）四个列表。
-- `params.compare`：13 行语义差异表，每行标记 `same / renamed / removed / added / absent`，并给出两端的 wire name、是否必填、文档范围与备注。
-- `params.vendors`：支持的厂商及其字段（名称、是否支持、是否必填、范围、备注）。
-- `json.repair`：`ok`、`repaired`（文本或 `null`）、`value`、`actions`（每一次编辑）、`strategies`、`truncated`、`validated`、`placeholders`、`error`。
+- `params_map`：目标厂商的 wire 形状（`mapped`），以及 `dropped`（目标无等价）、`added`（目标必填但输入未给，**不含值**）、`adjusted`（被文档化范围夹住）、`unknown`（无法识别的键）四个列表。
+- `params_compare`：13 行语义差异表，每行标记 `same / renamed / removed / added / absent`，并给出两端的 wire name、是否必填、文档范围与备注。
+- `params_vendors`：支持的厂商及其字段（名称、是否支持、是否必填、范围、备注）。
+- `json_repair`：`ok`、`repaired`（文本或 `null`）、`value`、`actions`（每一次编辑）、`strategies`、`truncated`、`validated`、`placeholders`、`error`。
 - 输出只落在工具结果里；**不写文件、不改原文件、不联网**。四个工具都是 R0（只读）。
 
 ### 示例
@@ -129,7 +129,7 @@ node samples/quickstart/run.mjs
 
 ![dsh-provider-params 真实测试输出：参数映射与 JSON 修复的 24 个测试通过](docs/assets/quickstart.png)
 
-*截图由真实 `node --test test/params.test.mjs test/repair.test.mjs` 输出渲染（24/24 通过）；命令、时间与输出哈希记录在 `screenshots.json`。完整套件为 4 个测试文件、35 个用例。*
+*截图由真实 `node --test test/params.test.mjs test/repair.test.mjs` 输出渲染（24/24 通过）；命令、时间与输出哈希记录在 `screenshots.json`。完整套件为 5 个测试文件、36 个用例。*
 
 ### 映射规则
 
@@ -150,7 +150,7 @@ node samples/quickstart/run.mjs
 | `truncationClosure` | 补齐被截断的字符串与容器 | 不把缺失内容猜成业务数据 |
 | `fieldCompletion` | 给已存在对象的缺失必填字段写 `null` | 不创建缺失的父对象，不编造值 |
 
-`json.repair` 只接受 `{` 或 `[` 根；其他根返回 `E_JSON_NOT_CONTAINER`。`schema` 只支持 `type`、`properties`、`required`、`additionalProperties`、`items`、`enum`、`const`；其他关键字会以 `E_JSON_SCHEMA_UNSUPPORTED` 拒绝，避免“看起来校验了其实没校验”。修复后仍违反 schema 的值会被拒绝（`E_JSON_SCHEMA_VIOLATION`），不会把原始坏文本当成功返回。
+`json_repair` 只接受 `{` 或 `[` 根；其他根返回 `E_JSON_NOT_CONTAINER`。`schema` 只支持 `type`、`properties`、`required`、`additionalProperties`、`items`、`enum`、`const`；其他关键字会以 `E_JSON_SCHEMA_UNSUPPORTED` 拒绝，避免“看起来校验了其实没校验”。修复后仍违反 schema 的值会被拒绝（`E_JSON_SCHEMA_VIOLATION`），不会把原始坏文本当成功返回。
 
 ## 实测数据
 
@@ -175,28 +175,28 @@ node samples/quickstart/run.mjs
 
 | 参数 | 所属工具 | 默认值 | 含义 |
 |---|---|---|---|
-| `from` | `params.map` / `params.compare` | 必填 | 源厂商 id；11 个 id 见 `params.vendors` |
-| `to` | `params.map` / `params.compare` | 必填 | 目标厂商 id |
-| `params` | `params.map` | 必填 | 请求参数片段；可用源厂商 wire name 或 canonical 名 |
-| `strict` | `params.map` | `false` | `true` 时未知键返回 `E_PARAMS_UNKNOWN_PARAM` |
-| `text` | `json.repair` | 必填 | 待修复的 JSON 文本；可带 Markdown 代码围栏 |
-| `max_steps` | `json.repair` | `8` | 文本/结构修复的扫描-应用轮数，1–64 |
+| `from` | `params_map` / `params_compare` | 必填 | 源厂商 id；11 个 id 见 `params_vendors` |
+| `to` | `params_map` / `params_compare` | 必填 | 目标厂商 id |
+| `params` | `params_map` | 必填 | 请求参数片段；可用源厂商 wire name 或 canonical 名 |
+| `strict` | `params_map` | `false` | `true` 时未知键返回 `E_PARAMS_UNKNOWN_PARAM` |
+| `text` | `json_repair` | 必填 | 待修复的 JSON 文本；可带 Markdown 代码围栏 |
+| `max_steps` | `json_repair` | `8` | 文本/结构修复的扫描-应用轮数，1–64 |
 
 <details>
 <summary>完整参数表（10 个）</summary>
 
 | 参数 | 所属工具 | 默认值 | 含义 |
 |---|---|---|---|
-| `from` | `params.map` / `params.compare` | 必填 | 源厂商 id |
-| `to` | `params.map` / `params.compare` | 必填 | 目标厂商 id |
-| `params` | `params.map` | 必填 | 请求参数片段 |
-| `strict` | `params.map` | `false` | 未知键是否直接报错 |
-| `vendor` | `params.vendors` | 全部 | 只列指定厂商；大小写不敏感 |
-| `include_unsupported` | `params.vendors` | `false` | 是否包含目标厂商无等价字段 |
-| `text` | `json.repair` | 必填 | 待修复的 JSON 文本 |
-| `schema` | `json.repair` | 无 | 支持子集的 JSON Schema；用于必填补全与最终校验 |
-| `strategies` | `json.repair` | 四个全开 | `escape_repair` / `trailing_comma` / `truncation_closure` / `field_completion` |
-| `max_steps` | `json.repair` | `8` | 1–64 的整数 |
+| `from` | `params_map` / `params_compare` | 必填 | 源厂商 id |
+| `to` | `params_map` / `params_compare` | 必填 | 目标厂商 id |
+| `params` | `params_map` | 必填 | 请求参数片段 |
+| `strict` | `params_map` | `false` | 未知键是否直接报错 |
+| `vendor` | `params_vendors` | 全部 | 只列指定厂商；大小写不敏感 |
+| `include_unsupported` | `params_vendors` | `false` | 是否包含目标厂商无等价字段 |
+| `text` | `json_repair` | 必填 | 待修复的 JSON 文本 |
+| `schema` | `json_repair` | 无 | 支持子集的 JSON Schema；用于必填补全与最终校验 |
+| `strategies` | `json_repair` | 四个全开 | `escape_repair` / `trailing_comma` / `truncation_closure` / `field_completion` |
+| `max_steps` | `json_repair` | `8` | 1–64 的整数 |
 
 </details>
 
@@ -212,21 +212,21 @@ node samples/quickstart/run.mjs
 <details>
 <summary>映射结果和预期不一样？</summary>
 
-先看 `dropped` 和 `adjusted`：目标厂商可能确实没有该字段，或者值被文档范围夹住了。再用 `params.compare` 看两端的 wire name 与范围。未知键会出现在 `unknown`，不会静默进入结果。
+先看 `dropped` 和 `adjusted`：目标厂商可能确实没有该字段，或者值被文档范围夹住了。再用 `params_compare` 看两端的 wire name 与范围。未知键会出现在 `unknown`，不会静默进入结果。
 
 </details>
 
 <details>
 <summary>能处理我的文件吗？</summary>
 
-不能直接读文件。把 JSON 文本作为 `text` 传入 `json.repair`；把请求片段作为对象传入 `params.map`。本包不访问磁盘、不联网、不调用模型。
+不能直接读文件。把 JSON 文本作为 `text` 传入 `json_repair`；把请求片段作为对象传入 `params_map`。本包不访问磁盘、不联网、不调用模型。
 
 </details>
 
 <details>
 <summary>缺失字段会被编造吗？</summary>
 
-不会。`added` 只报告目标厂商必填但输入没有的字段，不带值；`json.repair` 的必填补全只写 `null` 占位，并把路径放进 `placeholders`。占位符不是数据，需要调用方补真实值。
+不会。`added` 只报告目标厂商必填但输入没有的字段，不带值；`json_repair` 的必填补全只写 `null` 占位，并把路径放进 `placeholders`。占位符不是数据，需要调用方补真实值。
 
 </details>
 
@@ -241,7 +241,7 @@ node samples/quickstart/run.mjs
 
 - **只读，不落盘。** 四个工具都不写文件、不改原文件；输出只存在于工具结果，调用结束后不保留状态。
 - **不联网、不调用模型。** 源码中没有 HTTP / DNS / WebSocket 调用，也没有模型调用路径；`dsh.demo.network` 为 `false`。
-- **不编造值。** `added` 只报告目标必填但缺失的字段，不带值；`json.repair` 的必填补全只写 `null` 占位，路径进 `placeholders`，由调用方补真实值。
+- **不编造值。** `added` 只报告目标必填但缺失的字段，不带值；`json_repair` 的必填补全只写 `null` 占位，路径进 `placeholders`，由调用方补真实值。
 - **范围只在文档写明时夹。** 目前显式 clamp 的是 ERNIE `temperature`（0.01..1）与 Anthropic `temperature`（0..1）；其余厂商的备注范围不会触发改值。
 - **失败关闭。** schema 使用不支持的关键字、修复后仍违反 schema、未知策略名、越界 `max_steps` 都会响亮失败，不会把原始坏文本当成功返回。
 
@@ -256,7 +256,7 @@ node samples/quickstart/run.mjs
 
 | 错误码 | 含义 | 下一步 |
 |---|---|---|
-| `E_PARAMS_UNKNOWN_VENDOR` | 厂商 id 不在表里 | 用 `params.vendors` 查看 11 个 id |
+| `E_PARAMS_UNKNOWN_VENDOR` | 厂商 id 不在表里 | 用 `params_vendors` 查看 11 个 id |
 | `E_PARAMS_UNKNOWN_PARAM` | `strict: true` 下有未知键 | 删掉未知键或改用 `strict: false` |
 | `E_PARAMS_CONFLICT` | 同一参数用两种写法给了不同值 | 只保留一种写法 |
 | `E_JSON_NOT_CONTAINER` | 文本根不是对象或数组 | 传工具输出里的 `{...}` / `[...]` 片段 |
@@ -305,13 +305,13 @@ node scripts/gate.mjs
 
 `node scripts/gate.mjs` 依次执行 lint、`tsc --noEmit`、构建、验收脚本和全部测试；验收行写入 `ACCEPTANCE.csv`（public/synthetic，全部 `counted=false`）。
 
-当前版本 `0.1.0`（与 `package.json` 一致）；测试为 4 个文件、35 个用例。目录布局：
+当前版本 `0.2.0`（与 `package.json` 一致）；测试为 5 个文件、36 个用例。目录布局：
 
 | 路径 | 内容 |
 |---|---|
 | `src/core/` | 纯函数核心：`rosetta`（参数表）、`mapping`、`repair`、`json`、`errors`；不依赖 Cordis |
 | `src/plugin/` | `index.ts`（apply）与 `tools.ts`（四个工具定义） |
-| `test/` | `params` / `repair` / `plugin-smoke` / `samples` 四组 `node --test` 用例 |
+| `test/` | `params` / `repair` / `plugin-smoke` / `samples` / `tool-name-wire` 五组 `node --test` 用例 |
 | `samples/quickstart/` | 合成输入、金标输出与 `run.mjs` |
 | `scripts/` | `acceptance.mjs`、`gate.mjs`、`lint.mjs`、`gen-readme-assets.py` |
 | `docs/assets/` | README 配图（hero SVG 深浅双版、quickstart 截图） |

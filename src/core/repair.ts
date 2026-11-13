@@ -156,7 +156,7 @@ function normalizeSchema(schema: JsonValue | undefined): JsonSchema | undefined 
       if (CONSTRAINT_KEYWORDS.includes(key) || ANNOTATION_KEYWORDS.includes(key)) continue
       throw new ProviderParamsError(
         'E_JSON_SCHEMA_UNSUPPORTED',
-        `${path}.${key} is not supported by json.repair`,
+        `${path}.${key} is not supported by json_repair`,
         'use only type/properties/required/additionalProperties/items/enum/const',
       )
     }

@@ -10,11 +10,11 @@ Outputs (idempotent overwrite):
       quickstart result (openai -> anthropic), plus a repair-receipt strip.
   dsh-provider-params-flow-v5-{light,dark}.svg
       1100x660 hand-written structure diagram, two coupled panels:
-        A  params.map - a *gate cascade*: one recognised? gate, one target-
+        A  params_map - a *gate cascade*: one recognised? gate, one target-
            support gate, one documented-range gate; each "no" leaves through a
            side exit into its own verdict list, survivors land in mapped and
            the target-required gap is the added card.
-        B  json.repair - a *bounded loop*: normalize/parse, a strategy pass
+        B  json_repair - a *bounded loop*: normalize/parse, a strategy pass
            that can only be retried max_steps times, fieldCompletion+validate,
            then two terminals (ok | E_JSON_*), fail-closed.
       Text inside the SVG is API tokens plus short English labels, so all five
@@ -266,7 +266,7 @@ LEDGER_ROWS = [
     ]),
 ]
 
-RECEIPT = ("json.repair → ok · actions[2] · "
+RECEIPT = ("json_repair → ok · actions[2] · "
            "strategies[escapeRepair,trailingComma]")
 
 
@@ -319,7 +319,7 @@ HERO_COPY = {
         meta="R0 · 11 vendors × 13 fields · 5 verdict lists · 4 strategies",
         meta2="Apache-2.0 · DSH >=0.2.1 <0.4.0 · Node >=24.9 <25",
         footer="github.com/PerryLink/dsh-provider-params",
-        version="v0.1.0 · alpha / public-synthetic",
+        version="v0.2.0 · alpha / public-synthetic",
     ),
     "en": dict(
         kicker="DSH PLUGIN · FOUR READ-ONLY TOOLS",
@@ -329,7 +329,7 @@ HERO_COPY = {
         meta="R0 · 11 vendors × 13 fields · 5 verdict lists · 4 strategies",
         meta2="Apache-2.0 · DSH >=0.2.1 <0.4.0 · Node >=24.9 <25",
         footer="github.com/PerryLink/dsh-provider-params",
-        version="v0.1.0 · alpha / public-synthetic",
+        version="v0.2.0 · alpha / public-synthetic",
     ),
 }
 
@@ -474,15 +474,15 @@ def flow_svg(skin: str) -> str:
     parts = [
         '<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="660" '
         'viewBox="0 0 1100 660" role="img" '
-        'aria-label="dsh-provider-params structure: params.map sorts every '
-        'field through three gates into five verdict lists; json.repair runs a '
+        'aria-label="dsh-provider-params structure: params_map sorts every '
+        'field through three gates into five verdict lists; json_repair runs a '
         'bounded normalize-parse-strategy loop and stops at ok or E_JSON_*">',
         '<title>dsh-provider-params structure: verdict gates + bounded repair loop</title>',
-        '<desc>Panel A: params.map reads the 11-by-13 table; each input key '
+        '<desc>Panel A: params_map reads the 11-by-13 table; each input key '
         'passes a recognised? gate (else unknown), a target-support gate (else '
         'dropped) and a documented-range gate (else adjusted), survivors land '
         'in mapped, and target-required gaps become added with no value. '
-        'Panel B: json.repair trims and extracts a fence, parses, retries a '
+        'Panel B: json_repair trims and extracts a fence, parses, retries a '
         'bounded strategy pass (escapeRepair, trailingComma, truncationClosure) '
         'at most max_steps times, completes required fields with null, '
         'validates against the supported schema subset, then returns ok or a '
@@ -527,11 +527,11 @@ def flow_svg(skin: str) -> str:
         txt(1052, 82, "11 vendors × 13 canonical fields",
             size=14, fill=FAINT, mono=True, anchor="end", maxw=300),
         line(48, 100, 1052, 100),
-        # ---- panel A: params.map ----------------------------------------
+        # ---- panel A: params_map ----------------------------------------
         card(48, 112, 508, 472),
         f'<circle cx="72" cy="146" r="11" fill="{GS}"/>',
         txt(72, 150, "A", size=13, fill=G, weight="700", anchor="middle"),
-        txt(92, 151, "params.map — per-field verdicts", size=15, weight="700",
+        txt(92, 151, "params_map — per-field verdicts", size=15, weight="700",
             maxw=300),
         txt(532, 151, "openai → anthropic", size=12, fill=FAINT, mono=True,
             anchor="end", maxw=130),
@@ -572,15 +572,15 @@ def flow_svg(skin: str) -> str:
         txt(438, 508, "no value", size=11.5, mono=True, maxw=84),
         txt(438, 527, "invented", size=11.5, mono=True, maxw=84),
         # panel A footnote
-        txt(68, 570, "params.compare → 13 rows · params.vendors → 11 × 13",
+        txt(68, 570, "params_compare → 13 rows · params_vendors → 11 × 13",
             size=12, fill=SUB, mono=True, maxw=330),
         txt(536, 570, "R0 · read-only", size=12, fill=FAINT, mono=True,
             anchor="end", maxw=120),
-        # ---- panel B: json.repair ---------------------------------------
+        # ---- panel B: json_repair ---------------------------------------
         card(572, 112, 480, 472),
         f'<circle cx="596" cy="146" r="11" fill="{GS}"/>',
         txt(596, 150, "B", size=13, fill=G, weight="700", anchor="middle"),
-        txt(616, 151, "json.repair — bounded loop", size=15, weight="700",
+        txt(616, 151, "json_repair — bounded loop", size=15, weight="700",
             maxw=290),
         txt(1032, 151, "max_steps 1..64 · default 8", size=12, fill=FAINT,
             mono=True, anchor="end", maxw=150),

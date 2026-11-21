@@ -131,6 +131,11 @@ node samples/quickstart/run.mjs
 
 *截图由真实 `node --test test/params.test.mjs test/repair.test.mjs` 输出渲染（24/24 通过）；命令、时间与输出哈希记录在 `screenshots.json`。完整套件为 5 个测试文件、36 个用例。*
 
+![dsh-provider-params 真实测试输出：参数映射与 JSON 修复的 24 个测试通过](docs/assets/dsh-provider-params-demo.gif)
+
+*同一段真实运行的动图版本。*
+
+
 ### 映射规则
 
 1. **只做表里写过的事。** `supported: false` 的字段进入 `dropped`，不会猜一个看起来合理的名字。

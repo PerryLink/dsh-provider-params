@@ -133,6 +133,11 @@ node samples/quickstart/run.mjs
 
 *A captura é renderizada a partir da saída real de `node --test test/params.test.mjs test/repair.test.mjs` (24/24 aprovados); o comando, a data e o hash estão registrados em `screenshots.json`. A suíte completa tem 5 arquivos e 36 casos.*
 
+![Execução real dos testes do dsh-provider-params: 24 testes de mapeamento e reparação aprovados](docs/assets/dsh-provider-params-demo.gif)
+
+*A versão animada da mesma execução.*
+
+
 ### Regras de mapeamento
 
 1. **Somente o que a tabela declara.** Uma célula `supported: false` é descartada com um motivo, nunca renomeada para um campo que pareça plausível.

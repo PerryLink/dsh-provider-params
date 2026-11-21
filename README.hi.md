@@ -133,6 +133,11 @@ node samples/quickstart/run.mjs
 
 *स्क्रीनशॉट असली `node --test test/params.test.mjs test/repair.test.mjs` आउटपुट से बनाया गया है (24/24 पास); कमांड, तिथि और हैश `screenshots.json` में दर्ज हैं। पूरी सूट में 5 फ़ाइलें और 36 केस हैं।*
 
+![dsh-provider-params का असली टेस्ट रन: 24 mapping और repair टेस्ट पास](docs/assets/dsh-provider-params-demo.gif)
+
+*उसी असली रन का एनिमेटेड संस्करण।*
+
+
 ### मैपिंग नियम
 
 1. **केवल वही जो तालिका में लिखा है।** `supported: false` वाला सेल कारण के साथ छोड़ा जाता है, कभी भी मिलते-जुलते नाम में नहीं बदला जाता।

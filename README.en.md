@@ -133,6 +133,11 @@ node samples/quickstart/run.mjs
 
 *The screenshot is rendered from real `node --test test/params.test.mjs test/repair.test.mjs` output (24/24 passed); the command, date, and hash are recorded in `screenshots.json`. The full suite is 5 test files and 36 cases.*
 
+![Real dsh-provider-params test run: 24 mapping and repair tests passed](docs/assets/dsh-provider-params-demo.gif)
+
+*The animated version of the same run.*
+
+
 ### Mapping rules
 
 1. **Only what the table states.** A `supported: false` cell is dropped with a reason, never renamed to a plausible-looking field.

@@ -11,6 +11,8 @@
 
 A read-only toolkit for DeepSeek Harness: `params_map` / `params_compare` / `params_vendors` handle `temperature`, `top_p`, `max_tokens`, `stop`, `system` and related fields, while `json_repair` handles trailing commas, raw newlines, and truncation. No network, no file writes, no model calls.
 
+Last verified on DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [Install](#three-step-setup) · [Configuration](#configuration) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -136,7 +138,6 @@ node samples/quickstart/run.mjs
 ![Real dsh-provider-params test run: 24 mapping and repair tests passed](docs/assets/dsh-provider-params-demo.gif)
 
 *The animated version of the same run.*
-
 
 ### Mapping rules
 
@@ -312,7 +313,7 @@ node scripts/gate.mjs
 
 `node scripts/gate.mjs` runs lint, `tsc --noEmit`, the build, the acceptance script, and every test. Acceptance rows are written to `ACCEPTANCE.csv` as public/synthetic, `counted=false`.
 
-Current version `0.2.0` (matches `package.json`); the test suite has 5 files and 36 cases. Layout:
+Current version `0.2.1` (matches `package.json`); the test suite has 5 files and 36 cases. Layout:
 
 | Path | Contents |
 |---|---|

@@ -11,6 +11,8 @@
 
 面向 DeepSeek Harness 的只读工具包：`params_map` / `params_compare` / `params_vendors` 处理 `temperature`、`top_p`、`max_tokens`、`stop`、`system` 等字段，`json_repair` 处理尾逗号、裸换行与截断；不联网、不写文件、不调用模型。
 
+最近一次核验：DeepSeek Harness `dsh-v0.2.3-alpha.1`（2026-11-22）。
+
 [安装](#三步上手) · [配置](#配置) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -134,7 +136,6 @@ node samples/quickstart/run.mjs
 ![dsh-provider-params 真实测试输出：参数映射与 JSON 修复的 24 个测试通过](docs/assets/dsh-provider-params-demo.gif)
 
 *同一段真实运行的动图版本。*
-
 
 ### 映射规则
 
@@ -310,7 +311,7 @@ node scripts/gate.mjs
 
 `node scripts/gate.mjs` 依次执行 lint、`tsc --noEmit`、构建、验收脚本和全部测试；验收行写入 `ACCEPTANCE.csv`（public/synthetic，全部 `counted=false`）。
 
-当前版本 `0.2.0`（与 `package.json` 一致）；测试为 5 个文件、36 个用例。目录布局：
+当前版本 `0.2.1`（与 `package.json` 一致）；测试为 5 个文件、36 个用例。目录布局：
 
 | 路径 | 内容 |
 |---|---|

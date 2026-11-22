@@ -11,6 +11,8 @@
 
 Um kit de ferramentas somente leitura para o DeepSeek Harness: `params_map` / `params_compare` / `params_vendors` tratam de `temperature`, `top_p`, `max_tokens`, `stop`, `system` e campos relacionados, enquanto `json_repair` trata de vírgulas finais, quebras de linha cruas e truncamento. Sem rede, sem gravação de arquivos, sem chamadas a modelo.
 
+Última verificação: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [Instalar](#instalação-em-três-passos) · [Configuração](#configuração) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -136,7 +138,6 @@ node samples/quickstart/run.mjs
 ![Execução real dos testes do dsh-provider-params: 24 testes de mapeamento e reparação aprovados](docs/assets/dsh-provider-params-demo.gif)
 
 *A versão animada da mesma execução.*
-
 
 ### Regras de mapeamento
 
@@ -312,7 +313,7 @@ node scripts/gate.mjs
 
 O `node scripts/gate.mjs` executa lint, `tsc --noEmit`, a compilação, o script de aceitação e todos os testes. As linhas de aceitação são gravadas em `ACCEPTANCE.csv` como public/synthetic, `counted=false`.
 
-Versão atual `0.2.0` (igual ao `package.json`); a suíte tem 5 arquivos e 36 casos. Estrutura:
+Versão atual `0.2.1` (igual ao `package.json`); a suíte tem 5 arquivos e 36 casos. Estrutura:
 
 | Caminho | Conteúdo |
 |---|---|

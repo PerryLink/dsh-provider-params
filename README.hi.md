@@ -11,6 +11,8 @@
 
 DeepSeek Harness के लिए रीड-ओनली टूलकिट: `params_map` / `params_compare` / `params_vendors` `temperature`, `top_p`, `max_tokens`, `stop`, `system` जैसे फ़ील्ड संभालते हैं, और `json_repair` trailing comma, कच्चे newline तथा truncation को ठीक करता है। कोई नेटवर्क नहीं, कोई फ़ाइल लेखन नहीं, कोई मॉडल कॉल नहीं।
 
+अंतिम सत्यापन: DeepSeek Harness `dsh-v0.2.3-alpha.1` (2026-11-22).
+
 [इंस्टॉल](#तीन-चरणों-में-शुरुआत) · [कॉन्फ़िगरेशन](#कॉन्फ़िगरेशन) · [FAQ](#faq) · [简体中文](README.md) · [English](README.en.md) · [Español](README.es.md) · [Português](README.pt.md) · [हिन्दी](README.hi.md)
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-3366CC?style=flat-square&labelColor=2B3245)](LICENSE)
@@ -136,7 +138,6 @@ node samples/quickstart/run.mjs
 ![dsh-provider-params का असली टेस्ट रन: 24 mapping और repair टेस्ट पास](docs/assets/dsh-provider-params-demo.gif)
 
 *उसी असली रन का एनिमेटेड संस्करण।*
-
 
 ### मैपिंग नियम
 
@@ -312,7 +313,7 @@ node scripts/gate.mjs
 
 `node scripts/gate.mjs` lint, `tsc --noEmit`, build, acceptance स्क्रिप्ट और सभी टेस्ट चलाता है। Acceptance पंक्तियाँ `ACCEPTANCE.csv` में public/synthetic, `counted=false` के रूप में लिखी जाती हैं।
 
-वर्तमान संस्करण `0.2.0` (`package.json` के अनुसार); सूट में 5 फ़ाइलें और 36 केस हैं। संरचना:
+वर्तमान संस्करण `0.2.1` (`package.json` के अनुसार); सूट में 5 फ़ाइलें और 36 केस हैं। संरचना:
 
 | पथ | सामग्री |
 |---|---|

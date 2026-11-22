@@ -319,7 +319,7 @@ HERO_COPY = {
         meta="R0 · 11 vendors × 13 fields · 5 verdict lists · 4 strategies",
         meta2="Apache-2.0 · DSH >=0.2.1 <0.4.0 · Node >=24.9 <25",
         footer="github.com/PerryLink/dsh-provider-params",
-        version="v0.2.0 · alpha / public-synthetic",
+        version="v0.2.1 · alpha / public-synthetic",
     ),
     "en": dict(
         kicker="DSH PLUGIN · FOUR READ-ONLY TOOLS",
@@ -329,7 +329,7 @@ HERO_COPY = {
         meta="R0 · 11 vendors × 13 fields · 5 verdict lists · 4 strategies",
         meta2="Apache-2.0 · DSH >=0.2.1 <0.4.0 · Node >=24.9 <25",
         footer="github.com/PerryLink/dsh-provider-params",
-        version="v0.2.0 · alpha / public-synthetic",
+        version="v0.2.1 · alpha / public-synthetic",
     ),
 }
 

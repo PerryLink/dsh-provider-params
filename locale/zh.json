@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Provider params",
+    "description": "把 11 家模型厂商的请求参数互相映射，再把坏掉的 JSON 按固定规则修好——每一步都留下可审计的记录。"
+  }
+}

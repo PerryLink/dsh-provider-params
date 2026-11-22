@@ -313,7 +313,7 @@ node scripts/gate.mjs
 
 `node scripts/gate.mjs` runs lint, `tsc --noEmit`, the build, the acceptance script, and every test. Acceptance rows are written to `ACCEPTANCE.csv` as public/synthetic, `counted=false`.
 
-Current version `0.2.1` (matches `package.json`); the test suite has 5 files and 36 cases. Layout:
+Current version `0.2.2` (matches `package.json`); the test suite has 5 files and 36 cases. Layout:
 
 | Path | Contents |
 |---|---|

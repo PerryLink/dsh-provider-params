@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Provider params",
+    "description": "Map request parameters across 11 LLM vendors, then repair broken JSON with fixed rules — every step leaves an auditable record."
+  }
+}

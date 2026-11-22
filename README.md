@@ -311,7 +311,7 @@ node scripts/gate.mjs
 
 `node scripts/gate.mjs` 依次执行 lint、`tsc --noEmit`、构建、验收脚本和全部测试；验收行写入 `ACCEPTANCE.csv`（public/synthetic，全部 `counted=false`）。
 
-当前版本 `0.2.1`（与 `package.json` 一致）；测试为 5 个文件、36 个用例。目录布局：
+当前版本 `0.2.2`（与 `package.json` 一致）；测试为 5 个文件、36 个用例。目录布局：
 
 | 路径 | 内容 |
 |---|---|

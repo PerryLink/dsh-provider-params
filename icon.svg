@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="dsh-provider-params">
+  <rect width="128" height="128" rx="24" fill="hsl(183 45% 18%)"/>
+  <circle cx="47" cy="41" r="31" fill="none" stroke="hsl(223 70% 62%)" stroke-width="6"/>
+  <path d="M78 41 L106 56.5 L78 72 Z" fill="hsl(23 65% 58%)"/>
+</svg>
